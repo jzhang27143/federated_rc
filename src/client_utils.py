@@ -38,7 +38,7 @@ def show_connection(fclient_obj):
 def show_my_ip(fclient_obj):
     hostname = socket.gethostname()    
     IPAddr = socket.gethostbyname(hostname) 
-    print("Server IP is: "+IPAddr)
+    print("Client IP is: "+IPAddr)
 
 def show_model_accuracy(fclient_obj):
     print('TODO: show current model accuracy')
