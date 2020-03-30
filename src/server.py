@@ -1,14 +1,18 @@
 import argparse
 import threading
-from src.server_utils import server_shell
 import socket
 import configparser
+from src.server_utils import server_shell
 
 class FederatedServer:
-    def __init__(self):
+    def __init__(self, model):
+        self._model = model
         self._connections = []
         self.parse_server_options()
         self.configure()
+
+        if self._interactive:
+            threading.Thread(target=server_shell, args=(self,)).start()
 
     def parse_server_options(self):
         parser = argparse.ArgumentParser(description='Federated Server Options')
@@ -26,20 +30,28 @@ class FederatedServer:
     def configure(self):
         config = configparser.ConfigParser()
         config.read(self._config_name)
-        self._wlan_ip = config['Network']['WLAN_IP']
-        self._port = int(config['Network']['PORT'])
+        self._wlan_ip = config['Network Config']['WLAN_IP']
+        self._port = int(config['Network Config']['PORT'])
 
+        self._model_fname = config['Learning Config']['MODEL_FILE_NAME']
+        self._episodes = int(config['Learning Config']['EPISODES'])
 
     def run(self):
-        if self._interactive:
-            threading.Thread(target=server_shell, args=(self,)).start()
-
         while True:
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.bind((self._wlan_ip, self._port))
-            s.listen()
-            client_conn, client_addr = s.accept()
+            try:
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.bind((self._wlan_ip, self._port))
+                s.listen()
+                client_conn, client_addr = s.accept()
 
-            self._connections.append(s)
-            self._port += 1
+                if self._verbose:
+                    print('Accepted connection from {}'.format(client_addr))
+                self._connections.append(client_conn)
+                self._port += 1
+
+            # Close all socket connections
+            except KeyboardInterrupt:
+                for socket_conn in self._connections:
+                    socket_conn.close()
+                break
 
