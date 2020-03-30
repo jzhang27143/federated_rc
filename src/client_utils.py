@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from src import network
+import socket
 
 # Local mini-batch gradient descent
 def client_train_MBGD(train, model, batch_size, lr, momentum, epochs, verbose):
@@ -35,7 +36,9 @@ def show_connection(fclient_obj):
     print('TODO: show server connection information')
 
 def show_my_ip(fclient_obj):
-    print('TODO: show client ip')
+    hostname = socket.gethostname()    
+    IPAddr = socket.gethostbyname(hostname) 
+    print("Server IP is: "+IPAddr)
 
 def show_model_accuracy(fclient_obj):
     print('TODO: show current model accuracy')
