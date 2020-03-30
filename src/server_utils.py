@@ -1,6 +1,7 @@
 import threading
 import torch
 import pickle
+import socket
 from src import network
 
 def broadcast_model(fserver_obj):
@@ -40,25 +41,33 @@ def federated_averaging(fserver_obj, tmp_fname='tmp_server.pt'):
         broadcast_model(fserver_obj) # Broadcast aggregated model
 
 def show_connections(fserver_obj):
-    print('TODO: show all connections')
+    #todo do this once clients are connected
+    print(fserver_obj._connections)
 
 def show_next_port(fserver_obj):
+    #todo where is next port
     print('TODO: show next port')
 
 def show_server_ip(fserver_obj):
-    print('TODO: show server ip')
+    hostname = socket.gethostname()    
+    IPAddr = socket.gethostbyname(hostname) 
+    print("Server IP is: "+IPAddr)
 
 def shell_help():
-    print('TODO: display all shell commands')
-
+    print("'connections' -- Shows all client connections")
+    print("'next port' -- Shows next port")
+    print("'ip' -- Shows server IP")
+    print("'start federated averaging' -- Starts federated averaging with connected clients")
+    print("'reset model' -- Resets server model")
+    
 def server_shell(fserver_obj):
     while True:
         input_cmd = input('>> ')
-        if input_cmd == 'show all connections':
+        if input_cmd == 'connections':
             show_connections(fserver_obj)
-        elif input_cmd == 'show next port':
+        elif input_cmd == 'next port':
             show_next_port(fserver_obj)
-        elif input_cmd == 'show server ip':
+        elif input_cmd == 'ip':
             show_server_ip(fserver_obj)
         elif input_cmd == '':
             continue
@@ -66,5 +75,7 @@ def server_shell(fserver_obj):
             threading.Thread(target=federated_averaging, args=(fserver_obj,)).start()
         elif input_cmd == 'reset model':
             reset_model(fserver_obj)
+        elif input_cmd == 'exit':
+            exit()
         else:
             shell_help()
