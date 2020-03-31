@@ -3,3 +3,5 @@
 /**/*.swp
 /**/*.pyc
 /**/*.pt
+
+data/MNIST/raw/

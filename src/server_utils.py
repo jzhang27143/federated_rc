@@ -44,6 +44,11 @@ def show_connections(fserver_obj):
     #todo do this once clients are connected
     for con in fserver_obj._connections: 
         print(con)
+        print(con.family)
+        print(dir(con))
+        print(con.raddr)
+        print(con.fd)
+        print(x)
 
 def show_next_port(fserver_obj):
     #todo where is next port
