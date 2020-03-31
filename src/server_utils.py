@@ -42,7 +42,8 @@ def federated_averaging(fserver_obj, tmp_fname='tmp_server.pt'):
 
 def show_connections(fserver_obj):
     #todo do this once clients are connected
-    print(fserver_obj._connections)
+    for con in fserver_obj._connections: 
+        print(con)
 
 def show_next_port(fserver_obj):
     #todo where is next port
