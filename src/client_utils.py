@@ -33,7 +33,9 @@ def client_train_MBGD(train, model, batch_size, lr, momentum, epochs, verbose):
     return network.UpdateObject(len(train), list(model.parameters()))
 
 def show_connection(fclient_obj):
-    print('TODO: show server connection information')
+    print("Server IP Address: {}, Server Port: {}".format(
+            fclient_obj._server_ip, fclient_obj._port))
+    #print('TODO: show server connection information')
 
 def show_my_ip(fclient_obj):
     hostname = socket.gethostname()    
