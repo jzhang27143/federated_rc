@@ -6,7 +6,7 @@ from src import network
 
 def broadcast_model(fserver_obj):
     torch.save(fserver_obj._model, fserver_obj._model_fname)
-    for socket_conn in fserver_obj._connections:
+    for socket_conn, addr, server_port in fserver_obj._connections:
         network.send_model_file(fserver_obj._model_fname, socket_conn)
 
 def federated_averaging(fserver_obj, tmp_fname='tmp_server.pt'):
@@ -16,8 +16,8 @@ def federated_averaging(fserver_obj, tmp_fname='tmp_server.pt'):
 
     for _ in range(fserver_obj._episodes):
         # Receive client updates
-        for idx, socket_conn in enumerate(fserver_obj._connections):
-            network.receive_model_file(tmp_fname, socket_conn)
+        for idx, conn_obj in enumerate(fserver_obj._connections):
+            network.receive_model_file(tmp_fname, conn_obj[0])
             if fserver_obj._verbose:
                 print('Update Object Received')
             update_objects[idx] = pickle.load(open(tmp_fname, 'rb'))
@@ -55,14 +55,20 @@ def show_server_ip(fserver_obj):
 def reset_model(fserver_obj):
     print("TODO: randomize server model weights")
 
+def quit(fserver_obj):
+    for conn, addr, server_port in fserver_obj._connections:
+        conn.shutdown(socket.SHUT_RDWR)
+        conn.close()
+
 def shell_help():
-    print("--------------------------- Server Shell Usage ---------------------------------")
-    print("'connections'               -- Shows all client hostnames and IP addresses")
-    print("'next port'                 -- Shows port number for the next client connection")
-    print("'server ip'                 -- Shows server's binded IP address")
-    print("'start federated averaging' -- Starts federated averaging with connected clients")
-    print("'reset model'               -- Resets server model to restart federated scheme")
-    
+    print("--------------------------- Server Shell Usage -------------------------------")
+    print("connections               -- Shows all client hostnames and IP addresses")
+    print("next port                 -- Shows port number for the next client connection")
+    print("server ip                 -- Shows server's binded IP address")
+    print("start federated averaging -- Starts federated averaging with connected clients")
+    print("reset model               -- Resets server model to restart federated scheme")
+    print("quit                      -- Closes sockets and exits shell")
+
 def server_shell(fserver_obj):
     while True:
         input_cmd = input('>> ')
@@ -78,7 +84,8 @@ def server_shell(fserver_obj):
             threading.Thread(target=federated_averaging, args=(fserver_obj,)).start()
         elif input_cmd == 'reset model':
             reset_model(fserver_obj)
-        elif input_cmd == 'exit':
-            exit()
+        elif input_cmd == 'quit':
+            quit(fserver_obj)
+            break
         else:
             shell_help()
