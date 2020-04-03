@@ -1,4 +1,3 @@
-import ifaddr
 import argparse
 import threading
 import socket
@@ -37,14 +36,14 @@ class FederatedServer:
                         if 'broadcast' in ipv4_address:
                             return intf_name
             return -1
-        config = configparser.ConfigParser()
-        config.read(self._config_name)
-        adapters = ifaddr.get_adapters()
-        print("Select your wifi interface with the index: ")
         IPs=[]
         picked=default_physical_interface(self)
         if picked!=-1: picked=netifaces.ifaddresses(picked)[2][0]['addr']
         if picked==-1:
+            print("Select your wifi interface with the index: ")
+            config = configparser.ConfigParser()
+            config.read(self._config_name)
+            adapters = ifaddr.get_adapters()
             for i in range(len(adapters)):
                 adapter=adapters[i]
                 print("{}: IP of network adapter {} is {}".format(i+1,adapter.nice_name,adapter.ips[1].ip))
@@ -59,9 +58,8 @@ class FederatedServer:
             if i==0: self._wlan_ip = config['Network Config']['WLAN_IP']
             else: self._wlan_ip = IPs[i-1]
         else: self._wlan_ip=picked
-        print(self._wlan_ip)
+        print("Connected on port {}".format(self._wlan_ip))
         self._port = int(config['Network Config']['PORT'])
-
         self._model_fname = config['Learning Config']['MODEL_FILE_NAME']
         self._episodes = int(config['Learning Config']['EPISODES'])
 
