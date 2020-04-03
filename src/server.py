@@ -12,7 +12,7 @@ class FederatedServer:
         self._connections = []
         self.parse_server_options()
         self.configure()
-
+        self._next_port=0
         if self._interactive:
             threading.Thread(target=server_shell, args=(self,)).start()
 
@@ -46,11 +46,11 @@ class FederatedServer:
 
         IPs=[]
         picked=default_physical_interface(self)
+        config = configparser.ConfigParser()
+        config.read(self._config_name)
         if picked!=-1: picked=netifaces.ifaddresses(picked)[2][0]['addr']
         if picked==-1:
             print("Select your wifi interface with the index: ")
-            config = configparser.ConfigParser()
-            config.read(self._config_name)
             adapters = ifaddr.get_adapters()
             for i in range(len(adapters)):
                 adapter=adapters[i]
@@ -66,12 +66,8 @@ class FederatedServer:
             if i==0: self._wlan_ip = config['Network Config']['WLAN_IP']
             else: self._wlan_ip = IPs[i-1]
         else: self._wlan_ip=picked
-<<<<<<< HEAD
-        print(self._wlan_ip)
-
-=======
         print("Connected on port {}".format(self._wlan_ip))
->>>>>>> cleaned up auto IP config
+
         self._port = int(config['Network Config']['PORT'])
         self._model_fname = config['Learning Config']['MODEL_FILE_NAME']
         self._episodes = int(config['Learning Config']['EPISODES'])
@@ -82,6 +78,8 @@ class FederatedServer:
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.setblocking(0)
                 s.bind((self._wlan_ip, self._port))
+                if self.port==0: self._port=s.getsockname()[1]
+                else self._port += 1
                 s.listen()
 
                 # For proper cleanup, sockets are non-blocking
@@ -96,7 +94,6 @@ class FederatedServer:
                 if self._verbose:
                     print('Accepted connection from {}'.format(client_addr))
                 self._connections.append((client_conn, client_addr, self._port))
-                self._port += 1
 
             except KeyboardInterrupt:
                 break
