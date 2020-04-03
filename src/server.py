@@ -46,7 +46,7 @@ class FederatedServer:
 
                 if self._verbose:
                     print('Accepted connection from {}'.format(client_addr))
-                self._connections.append(client_conn)
+                self._connections.append((client_conn, client_addr, self._port))
                 self._port += 1
 
             # Close all socket connections

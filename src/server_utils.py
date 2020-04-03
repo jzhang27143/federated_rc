@@ -41,42 +41,39 @@ def federated_averaging(fserver_obj, tmp_fname='tmp_server.pt'):
         broadcast_model(fserver_obj) # Broadcast aggregated model
 
 def show_connections(fserver_obj):
-    #todo do this once clients are connected
-    for con in fserver_obj._connections: 
-        print(con)
-        print(con.family)
-        print(dir(con))
-        print(con.raddr)
-        print(con.fd)
-        print(x)
+    for conn, addr, server_port in fserver_obj._connections:
+        client_name = socket.gethostbyaddr(addr[0])[0]
+        print("Client Name: {}, IP Address: {}, Server Port: {}, Client Port: {}".format(
+            client_name, addr[0], server_port, addr[1]))
 
 def show_next_port(fserver_obj):
-    #todo where is next port
-    print('TODO: show next port')
+    print("Next Available Client Port: {}".format(fserver_obj._port))
 
 def show_server_ip(fserver_obj):
-    hostname = socket.gethostname()    
-    IPAddr = socket.gethostbyname(hostname) 
-    print("Server IP is: "+IPAddr)
+    print("Server IP Address: {}".format(fserver_obj._wlan_ip))
+
+def reset_model(fserver_obj):
+    print("TODO: randomize server model weights")
 
 def shell_help():
-    print("'connections' -- Shows all client connections")
-    print("'next port' -- Shows next port")
-    print("'ip' -- Shows server IP")
+    print("--------------------------- Server Shell Usage ---------------------------------")
+    print("'connections'               -- Shows all client hostnames and IP addresses")
+    print("'next port'                 -- Shows port number for the next client connection")
+    print("'server ip'                 -- Shows server's binded IP address")
     print("'start federated averaging' -- Starts federated averaging with connected clients")
-    print("'reset model' -- Resets server model")
+    print("'reset model'               -- Resets server model to restart federated scheme")
     
 def server_shell(fserver_obj):
     while True:
         input_cmd = input('>> ')
-        if input_cmd == 'connections':
+        if input_cmd == '':
+            continue
+        elif input_cmd == 'connections':
             show_connections(fserver_obj)
         elif input_cmd == 'next port':
             show_next_port(fserver_obj)
-        elif input_cmd == 'ip':
+        elif input_cmd == 'server ip':
             show_server_ip(fserver_obj)
-        elif input_cmd == '':
-            continue
         elif input_cmd == 'start federated averaging':
             threading.Thread(target=federated_averaging, args=(fserver_obj,)).start()
         elif input_cmd == 'reset model':
