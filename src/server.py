@@ -1,4 +1,4 @@
-import ifaddr
+#import ifaddr
 import argparse
 import threading
 import socket
@@ -31,6 +31,8 @@ class FederatedServer:
     def configure(self):
         config = configparser.ConfigParser()
         config.read(self._config_name)
+        self._wlan_ip = config['Network Config']['WLAN_IP']
+        '''
         adapters = ifaddr.get_adapters()
         print("Select your wifi interface with the index: ")
         IPs=[]
@@ -47,6 +49,7 @@ class FederatedServer:
             except: print("Invalid Index")
         if i==0: self._wlan_ip = config['Network Config']['WLAN_IP']
         else: self._wlan_ip = IPs[i-1]
+        '''
         self._port = int(config['Network Config']['PORT'])
 
         self._model_fname = config['Learning Config']['MODEL_FILE_NAME']
