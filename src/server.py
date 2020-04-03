@@ -78,8 +78,8 @@ class FederatedServer:
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.setblocking(0)
                 s.bind((self._wlan_ip, self._port))
-                if self.port==0: self._port=s.getsockname()[1]
-                else self._port += 1
+                if self._port==0: self._port=s.getsockname()[1]
+                else: self._port += 1
                 s.listen()
 
                 # For proper cleanup, sockets are non-blocking
