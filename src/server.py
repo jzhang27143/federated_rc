@@ -10,7 +10,7 @@ class FederatedServer:
         self._connections = []
         self.parse_server_options()
         self.configure()
-
+        self._next_port=0
         if self._interactive:
             threading.Thread(target=server_shell, args=(self,)).start()
 
@@ -38,11 +38,11 @@ class FederatedServer:
             return -1
         IPs=[]
         picked=default_physical_interface(self)
+        config = configparser.ConfigParser()
+        config.read(self._config_name)
         if picked!=-1: picked=netifaces.ifaddresses(picked)[2][0]['addr']
         if picked==-1:
             print("Select your wifi interface with the index: ")
-            config = configparser.ConfigParser()
-            config.read(self._config_name)
             adapters = ifaddr.get_adapters()
             for i in range(len(adapters)):
                 adapter=adapters[i]
@@ -68,17 +68,16 @@ class FederatedServer:
             try:
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.bind((self._wlan_ip, self._port))
+                if self.port==0: self._port=s.getsockname()[1]
+                else self._port += 1
                 s.listen()
                 client_conn, client_addr = s.accept()
-
                 if self._verbose:
                     print('Accepted connection from {}'.format(client_addr))
                 self._connections.append((client_conn, client_addr, self._port))
-                self._port += 1
 
             # Close all socket connections
             except KeyboardInterrupt:
                 for socket_conn in self._connections:
                     socket_conn.close()
                 break
-
