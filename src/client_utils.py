@@ -43,6 +43,9 @@ def show_my_ip(fclient_obj):
 def show_model_accuracy(fclient_obj):
     print("Client Model Accuracy: {}".format(fclient_obj._accuracy))
 
+def reset_model(fclient_obj):
+    print("TODO: Reset model to random params")
+
 def quit(fclient_obj):
     _thread.interrupt_main()
     fclient_obj._socket.shutdown(socket.SHUT_RDWR)
@@ -66,6 +69,8 @@ def client_shell(fclient_obj):
             show_my_ip(fclient_obj)
         elif input_cmd == 'show model accuracy':
             show_model_accuracy(fclient_obj)
+        elif input_cmd == 'reset_model':
+            reset_model(fclient_obj)
         elif input_cmd == 'quit':
             quit(fclient_obj)
             break
