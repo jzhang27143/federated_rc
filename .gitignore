@@ -4,3 +4,6 @@
 /**/*.pyc
 /**/*.pt
 /data/*
+/**/*.ini
+!/test/config/sample_client_config.ini
+!/test/config/sample_server_config.ini
