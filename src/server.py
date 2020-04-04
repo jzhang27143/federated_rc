@@ -1,18 +1,18 @@
-#import ifaddr
 import argparse
 import threading
 import socket
 import configparser
 import errno
+import ifaddr
 from src.server_utils import server_shell
 
 class FederatedServer:
     def __init__(self, model):
         self._model = model
-        self._connections = []
+        self._connections = list()
         self.parse_server_options()
         self.configure()
-
+        self._next_port=0
         if self._interactive:
             threading.Thread(target=server_shell, args=(self,)).start()
 
@@ -28,30 +28,34 @@ class FederatedServer:
         self._config_name = args.config
         self._interactive = args.interactive
         self._verbose = args.verbose
- 
+
     def configure(self):
+        def select_interface_address(ipv4=True):
+            ip_type = int(ipv4)
+            adapters = ifaddr.get_adapters()
+            for idx, adapter in enumerate(adapters):
+                adapter_name, adapter_ip = adapter.nice_name, adapter.ips[ip_type].ip
+                print('Interface {} Name: {} IP address: {}'.format(idx, adapter_name, adapter_ip))
+
+            selected = False
+            while not selected:
+                try:
+                    adapter_idx = int(input('Enter selected interface number: '))
+                    selected_address = adapters[adapter_idx].ips[ip_type].ip
+                    selected = True
+                except (ValueError, IndexError) as e:
+                    print('Invalid input: Expected integer between 0 and {}'.format(len(adapter) - 1))
+            return selected_address
+
         config = configparser.ConfigParser()
         config.read(self._config_name)
-        self._wlan_ip = config['Network Config']['WLAN_IP']
-        '''
-        adapters = ifaddr.get_adapters()
-        print("Select your wifi interface with the index: ")
-        IPs=[]
-        for i in range(len(adapters)):
-            adapter=adapters[i]
-            print("{}: IP of network adapter {} is {}".format(i+1,adapter.nice_name,adapter.ips[1].ip))
-            IPs.append(adapter.ips[1].ip)
-        selected=False
-        print("Type the Index of the Adapter you want, and hit enter. To use the config, type 0.")
-        while not selected:
-            try:
-                i=int(input())
-                selected=True
-            except: print("Invalid Index")
-        if i==0: self._wlan_ip = config['Network Config']['WLAN_IP']
-        else: self._wlan_ip = IPs[i-1]
-        '''
-        self._port = int(config['Network Config']['PORT'])
+
+        # Configure IP address and port to bind server
+        ip_config = config['Network Config']['WLAN_IP']
+        self._wlan_ip = select_interface_address() if ip_config == 'auto-discover' else ip_config
+        port_config = config['Network Config']['PORT']
+        self._auto_port = (port_config == 'auto-discover')
+        self._port = 0 if self._auto_port else int(port_config)
 
         self._model_fname = config['Learning Config']['MODEL_FILE_NAME']
         self._episodes = int(config['Learning Config']['EPISODES'])
@@ -62,6 +66,8 @@ class FederatedServer:
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.setblocking(0)
                 s.bind((self._wlan_ip, self._port))
+                if self._auto_port: # update _port for auto-discover
+                    self._port=s.getsockname()[1]
                 s.listen()
 
                 # For proper cleanup, sockets are non-blocking
@@ -75,8 +81,9 @@ class FederatedServer:
 
                 if self._verbose:
                     print('Accepted connection from {}'.format(client_addr))
+
                 self._connections.append((client_conn, client_addr, self._port))
-                self._port += 1
+                self._port = 0 if self._auto_port else self._port + 1
 
             except KeyboardInterrupt:
                 break
