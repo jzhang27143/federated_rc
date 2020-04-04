@@ -27,7 +27,6 @@ def send_model_file(filename, socket_conn, buffer_size=1024):
     filesize = os.path.getsize(filename)
     model_serial = open(filename, 'rb')
     send_buffer = model_serial.read(buffer_size)
-    print(filesize)
 
     # File size sent first to allow socket to persist
     fsize_msg = _pad_buffer(str(filesize).encode(), buffer_size)
@@ -54,11 +53,13 @@ def _receive_buffer(socket_conn, buffer_size):
 
 def receive_model_file(filename, socket_conn, buffer_size=1024):
     bytes_remaining = int(_receive_buffer(socket_conn, buffer_size).decode().rstrip('\0'))
-    print(bytes_remaining)
     with open(filename, 'wb') as model_serial:
         while bytes_remaining > 0:
             data = _receive_buffer(socket_conn, buffer_size)
-            model_serial.write(data)
             bytes_remaining -= len(data)
+
+            if bytes_remaining < 0: # Remove trailing 0x00's
+                data = data[:buffer_size + bytes_remaining]
+            model_serial.write(data)
     model_serial.close()
 

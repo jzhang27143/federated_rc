@@ -47,6 +47,7 @@ class FederatedClient:
     def connect_to_server(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((self._server_ip, self._port))
+        s.setblocking(0)
         self._socket = s
         
     def train_fed_avg(self, train, tmp_fname='tmp_client.pt'):
