@@ -3,6 +3,7 @@ import argparse
 import threading
 import socket
 import configparser
+import errno
 from src.server_utils import server_shell
 
 class FederatedServer:
@@ -59,18 +60,23 @@ class FederatedServer:
         while True:
             try:
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.setblocking(0)
                 s.bind((self._wlan_ip, self._port))
                 s.listen()
-                client_conn, client_addr = s.accept()
+
+                # For proper cleanup, sockets are non-blocking
+                established = False
+                while not established:
+                    try:
+                        client_conn, client_addr = s.accept()
+                        established = True
+                    except BlockingIOError:
+                        continue
 
                 if self._verbose:
                     print('Accepted connection from {}'.format(client_addr))
                 self._connections.append((client_conn, client_addr, self._port))
                 self._port += 1
 
-            # Close all socket connections
             except KeyboardInterrupt:
-                for socket_conn in self._connections:
-                    socket_conn.close()
                 break
-
