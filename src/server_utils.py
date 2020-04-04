@@ -1,3 +1,4 @@
+import _thread
 import threading
 import torch
 import pickle
@@ -56,6 +57,7 @@ def reset_model(fserver_obj):
     print("TODO: randomize server model weights")
 
 def quit(fserver_obj):
+    _thread.interrupt_main()
     for conn, addr, server_port in fserver_obj._connections:
         conn.shutdown(socket.SHUT_RDWR)
         conn.close()

@@ -1,3 +1,4 @@
+import _thread
 import threading
 import torch
 import torch.nn as nn
@@ -42,6 +43,11 @@ def show_my_ip(fclient_obj):
 def show_model_accuracy(fclient_obj):
     print("Client Model Accuracy: {}", format(fclient_obj._accuracy))
 
+def quit(fclient_obj):
+    _thread.interrupt_main()
+    fclient_obj._socket.shutdown(socket.SHUT_RDWR)
+    fclient_obj._socket.close()
+
 def shell_help():
     print("--------------------------- Client Shell Usage -------------------------------")
     print("show connections          -- Shows server connection information")
@@ -51,13 +57,16 @@ def shell_help():
 def client_shell(fclient_obj):
     while True:
         input_cmd = input('>> ')
-        if input_cmd == 'show connection':
+        if input_cmd == '':
+            continue
+        elif input_cmd == 'show connection':
             show_connection(fclient_obj)
         elif input_cmd == 'show my ip':
             show_my_ip(fclient_obj)
         elif input_cmd == 'show model accuracy':
             show_model_accuracy(fclient_obj)
-        elif input_cmd == '':
-            continue
+        elif input_cmd == 'quit':
+            quit(fclient_obj)
+            break
         else:
             shell_help()
