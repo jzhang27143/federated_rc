@@ -16,3 +16,4 @@ if __name__ == '__main__':
     train, test = fetch_mnist_data()
     fc = client.FederatedClient()
     fc.train_fed_avg(train)
+    fc.calculate_accuracy(test)

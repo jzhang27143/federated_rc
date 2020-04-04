@@ -7,13 +7,13 @@ from src import network
 import socket
 
 # Local mini-batch gradient descent
-def client_train_MBGD(train, model, batch_size, lr, momentum, epochs, verbose):
+def client_train_MBGD(train, model, batch_size, lr, momentum, epochs, verbose, episode):
     train_loader = torch.utils.data.DataLoader(train, batch_size=batch_size, shuffle=True)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
 
     if verbose:
-        print('Episode Starting')
+        print("Episode {} Starting".format(episode))
 
     for epoch in range(epochs):
         running_loss = 0
@@ -38,12 +38,13 @@ def show_connection(fclient_obj):
             fclient_obj._server_ip, fclient_obj._port))
 
 def show_my_ip(fclient_obj):
-    hostname = socket.gethostname()    
-    IPAddr = socket.gethostbyname(hostname) 
-    print("Client IP is: "+IPAddr)
+    print("Client IP Address: {}".format(fclient_obj._wlan_ip))
 
 def show_model_accuracy(fclient_obj):
-    print('TODO: show current model accuracy')
+    print("Client Model Accuracy: {}".format(fclient_obj._accuracy))
+
+def reset_model(fclient_obj):
+    print("TODO: Reset model to random params")
 
 def quit(fclient_obj):
     _thread.interrupt_main()
@@ -51,7 +52,11 @@ def quit(fclient_obj):
     fclient_obj._socket.close()
 
 def shell_help():
-    print('TODO: display all shell commands')
+    print("--------------------------- Client Shell Usage -------------------------------")
+    print("show connections          -- Shows server connection information")
+    print("show my ip                -- Shows client ip")
+    print("show model accuracy       -- Shows client's current model accuraccy")
+    print("quit                      -- Terminates the client program")
 
 def client_shell(fclient_obj):
     while True:
@@ -64,6 +69,8 @@ def client_shell(fclient_obj):
             show_my_ip(fclient_obj)
         elif input_cmd == 'show model accuracy':
             show_model_accuracy(fclient_obj)
+        elif input_cmd == 'reset_model':
+            reset_model(fclient_obj)
         elif input_cmd == 'quit':
             quit(fclient_obj)
             break
