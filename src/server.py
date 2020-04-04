@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-import ifaddr
->>>>>>> 0744e95f8be6f0ee226dc944cb6ddd99fd357454
 import argparse
 import threading
 import socket
@@ -9,7 +5,7 @@ import configparser
 import errno
 import ifaddr
 from src.server_utils import server_shell
-import netifaces
+
 class FederatedServer:
     def __init__(self, model):
         self._model = model
