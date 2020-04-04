@@ -10,6 +10,7 @@ from src import network
 class FederatedClient:
     def __init__(self):
         self._model = None
+        self._accuracy = -1
         self.parse_client_options()
         self.configure()
 
@@ -57,9 +58,9 @@ class FederatedClient:
         if self._verbose:
             print('Received Initial Model')
 
-        for _ in range(self._episodes):
+        for i in range(self._episodes):
             update_obj = client_train_MBGD(train, self._model, self._batch_size, self._lr,
-                    self._momentum, self._epochs, self._verbose)
+                    self._momentum, self._epochs, self._verbose, i)
             pickle.dump(update_obj, open(tmp_fname, 'wb'))
             network.send_model_file(tmp_fname, self._socket) 
             
@@ -69,5 +70,20 @@ class FederatedClient:
             # Receive aggregated model from server
             network.receive_model_file(self._model_fname, self._socket)
             self._model = torch.load(self._model_fname)
+
+    def calculate_accuracy(self, test):
+        total = len(test)
+        total_correct = 0
+        test_loader = torch.utils.data.DataLoader(test, batch_size=self._batch_size)
+
+        for _, batch_data in enumerate(test_loader):
+            image, label = batch_data
+            prediction = self._model(image)
+            
+            for i in range(self._batch_size):
+                print(label)
+                print(prediction)
+            
+        self._accuracy = total_correct / total
 
 

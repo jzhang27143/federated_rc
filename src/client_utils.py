@@ -6,13 +6,13 @@ from src import network
 import socket
 
 # Local mini-batch gradient descent
-def client_train_MBGD(train, model, batch_size, lr, momentum, epochs, verbose):
+def client_train_MBGD(train, model, batch_size, lr, momentum, epochs, verbose, episode):
     train_loader = torch.utils.data.DataLoader(train, batch_size=batch_size, shuffle=True)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
 
     if verbose:
-        print('Episode Starting')
+        print("Episode {} Starting".format(episode))
 
     for epoch in range(epochs):
         running_loss = 0
@@ -35,18 +35,18 @@ def client_train_MBGD(train, model, batch_size, lr, momentum, epochs, verbose):
 def show_connection(fclient_obj):
     print("Server IP Address: {}, Server Port: {}".format(
             fclient_obj._server_ip, fclient_obj._port))
-    #print('TODO: show server connection information')
 
 def show_my_ip(fclient_obj):
-    hostname = socket.gethostname()    
-    IPAddr = socket.gethostbyname(hostname) 
-    print("Client IP is: "+IPAddr)
+    print("Client IP Address: {}".format(fclient_obj._wlan_ip))
 
 def show_model_accuracy(fclient_obj):
-    print('TODO: show current model accuracy')
+    print("Client Model Accuracy: {}", format(fclient_obj._accuracy))
 
 def shell_help():
-    print('TODO: display all shell commands')
+    print("--------------------------- Client Shell Usage -------------------------------")
+    print("show connections          -- Shows server connection information")
+    print("show my ip                -- Shows client ip")
+    print("show model accuracy       -- Shows client's current model accuraccy")
 
 def client_shell(fclient_obj):
     while True:
