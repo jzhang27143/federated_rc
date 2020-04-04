@@ -41,7 +41,7 @@ def show_my_ip(fclient_obj):
     print("Client IP Address: {}".format(fclient_obj._wlan_ip))
 
 def show_model_accuracy(fclient_obj):
-    print("Client Model Accuracy: {}", format(fclient_obj._accuracy))
+    print("Client Model Accuracy: {}".format(fclient_obj._accuracy))
 
 def quit(fclient_obj):
     _thread.interrupt_main()
@@ -53,6 +53,7 @@ def shell_help():
     print("show connections          -- Shows server connection information")
     print("show my ip                -- Shows client ip")
     print("show model accuracy       -- Shows client's current model accuraccy")
+    print("quit                      -- Terminates the client program")
 
 def client_shell(fclient_obj):
     while True:

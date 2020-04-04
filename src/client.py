@@ -74,15 +74,23 @@ class FederatedClient:
     def calculate_accuracy(self, test):
         total = len(test)
         total_correct = 0
-        test_loader = torch.utils.data.DataLoader(test, batch_size=self._batch_size)
+        test_loader = torch.utils.data.DataLoader(test)
 
         for _, batch_data in enumerate(test_loader):
             image, label = batch_data
-            prediction = self._model(image)
+            predictions = self._model(image)
+            preds = predictions.tolist()[0]
+            ans = label.tolist()[0]
+
+            maxval = -1
+            maxindex = 0
+            for i in range(len(preds)):
+                if preds[i] > maxval:
+                    maxval = preds[i]
+                    maxindex = i
             
-            for i in range(self._batch_size):
-                print(label)
-                print(prediction)
+            if maxindex == ans:
+                total_correct += 1
             
         self._accuracy = total_correct / total
 
