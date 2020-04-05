@@ -38,7 +38,7 @@ def show_connection(fclient_obj):
             fclient_obj._server_ip, fclient_obj._port))
 
 def show_my_ip(fclient_obj):
-    print("Client IP Address: {}".format(fclient_obj._wlan_ip))
+    print("Client IP Address: {}".format(fclient_obj._socket.getsockname()[0]))
 
 def show_model_accuracy(fclient_obj):
     print("Client Model Accuracy: {}".format(fclient_obj._accuracy))
