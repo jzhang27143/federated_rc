@@ -17,6 +17,7 @@ def client_train_MBGD(train, model, batch_size, lr, momentum, epochs, verbose, e
 
     for epoch in range(epochs):
         running_loss = 0
+
         for batch_idx, batch_data in enumerate(train_loader):
             image, label = batch_data
             optimizer.zero_grad()
@@ -25,7 +26,15 @@ def client_train_MBGD(train, model, batch_size, lr, momentum, epochs, verbose, e
             predictions = model(image)
             loss = criterion(predictions, label)
             loss.backward()
+
+            # avg each gradient update based on batch size
+            for p in model.parameters():
+                p.grad /= batch_size
+
+            # update model
             optimizer.step()
+
+            # running loss
             running_loss += loss.item()
 
         if epoch % 2 == 0 and verbose:

@@ -49,7 +49,7 @@ class FederatedClient:
         s.connect((self._server_ip, self._port))
         s.setblocking(0)
         self._socket = s
-        
+
     def train_fed_avg(self, train, tmp_fname='tmp_client.pt'):
         if self._verbose:
             print('Beginning Training')
@@ -71,6 +71,9 @@ class FederatedClient:
             # Receive aggregated model from server
             network.receive_model_file(self._model_fname, self._socket)
             self._model = torch.load(self._model_fname)
+
+        if self._verbose:
+            print("Training complete")
 
     def calculate_accuracy(self, test):
         total = len(test)
