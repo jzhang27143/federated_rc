@@ -31,7 +31,7 @@ class FederatedServer:
     def configure(self):
         def select_interface_address(ipv4=True):
             ip_type = int(ipv4)
-            adapters = ifaddr.get_adapters()
+            adapters = list(ifaddr.get_adapters())
             for idx, adapter in enumerate(adapters):
                 if ip_type < len(adapter.ips):
                     adapter_name, adapter_ip = adapter.nice_name, adapter.ips[ip_type].ip
