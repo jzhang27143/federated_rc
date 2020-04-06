@@ -54,7 +54,12 @@ def show_server_ip(fserver_obj):
     print("Server IP Address: {}".format(fserver_obj._wlan_ip))
 
 def reset_model(fserver_obj):
-    print("TODO: randomize server model weights")
+    def weights_init(m):
+        if isinstance(m, torch.nn.Conv2d) or isinstance(m, torch.nn.Linear):
+            torch.nn.init.xavier_uniform(m.weight.data)
+
+    fserver_obj._model.apply(weights_init)
+    print("Model Reset")
 
 def quit(fserver_obj):
     _thread.interrupt_main()

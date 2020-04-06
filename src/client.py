@@ -11,6 +11,7 @@ class FederatedClient:
     def __init__(self):
         self._model = None
         self._accuracy = -1
+        self._loss = -1
         self.parse_client_options()
         self.configure()
 
@@ -61,7 +62,7 @@ class FederatedClient:
 
         for i in range(self._episodes):
             update_obj = client_train_MBGD(train, self._model, self._batch_size, self._lr,
-                    self._momentum, self._epochs, self._verbose, i)
+                    self._momentum, self._epochs, self._loss, self._verbose, i)
             pickle.dump(update_obj, open(tmp_fname, 'wb'))
             network.send_model_file(tmp_fname, self._socket) 
             
@@ -96,6 +97,6 @@ class FederatedClient:
             if maxindex == ans:
                 total_correct += 1
             
-        self._accuracy = total_correct / total
+        self._accuracy = total_correct / total * 100
 
 
