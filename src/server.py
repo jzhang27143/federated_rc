@@ -12,7 +12,6 @@ class FederatedServer:
         self._connections = list()
         self.parse_server_options()
         self.configure()
-        self._next_port=0
         if self._interactive:
             threading.Thread(target=server_shell, args=(self,)).start()
 
@@ -67,7 +66,7 @@ class FederatedServer:
                 s.setblocking(0)
                 s.bind((self._wlan_ip, self._port))
                 if self._auto_port: # update _port for auto-discover
-                    self._port=s.getsockname()[1]
+                    self._port = s.getsockname()[1]
                 s.listen()
 
                 # For proper cleanup, sockets are non-blocking

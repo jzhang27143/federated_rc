@@ -15,12 +15,15 @@ def federated_averaging(fserver_obj, tmp_fname='tmp_server.pt'):
     broadcast_model(fserver_obj)   # Initialize client models
     update_objects = [None] * len(fserver_obj._connections)
 
-    for _ in range(fserver_obj._episodes):
+    for episode in range(fserver_obj._episodes):
+        if fserver_obj._verbose:
+            print('------ Federated Averaging Training Episode {} ------'.format(episode))
+
         # Receive client updates
         for idx, conn_obj in enumerate(fserver_obj._connections):
             network.receive_model_file(tmp_fname, conn_obj[0])
             if fserver_obj._verbose:
-                print('Update Object Received')
+                print('Update Object Received from Client {}'.format(idx))
             update_objects[idx] = pickle.load(open(tmp_fname, 'rb'))
 
         # Compute average aggregated model
@@ -56,7 +59,7 @@ def show_server_ip(fserver_obj):
 def reset_model(fserver_obj):
     def weights_init(m):
         if isinstance(m, torch.nn.Conv2d) or isinstance(m, torch.nn.Linear):
-            torch.nn.init.xavier_uniform(m.weight.data)
+            torch.nn.init.xavier_uniform_(m.weight.data)
 
     fserver_obj._model.apply(weights_init)
     print("Model Reset")

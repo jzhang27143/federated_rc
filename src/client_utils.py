@@ -13,7 +13,7 @@ def client_train_MBGD(train, model, batch_size, lr, momentum, epochs, verbose, e
     optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
 
     if verbose:
-        print("Episode {} Starting".format(episode))
+        print("------ Episode {} Starting ------".format(episode))
 
     for epoch in range(epochs):
         running_loss = 0
@@ -29,8 +29,6 @@ def client_train_MBGD(train, model, batch_size, lr, momentum, epochs, verbose, e
 
             # update model
             optimizer.step()
-
-            # running loss
             running_loss += loss.item()
 
         if epoch % 2 == 0 and verbose:
@@ -54,7 +52,7 @@ def show_model_loss(fclient_obj):
 def reset_model(fclient_obj):
     def weights_init(m):
         if isinstance(m, torch.nn.Conv2d) or isinstance(m, torch.nn.Linear):
-            torch.nn.init.xavier_uniform(m.weight.data)
+            torch.nn.init.xavier_uniform_(m.weight.data)
 
     fclient_obj._model.apply(weights_init)
     print("Model Reset")
@@ -66,25 +64,25 @@ def quit(fclient_obj):
 
 def shell_help():
     print("--------------------------- Client Shell Usage -------------------------------")
-    print("show connection          -- Shows server connection information")
-    print("show my ip                -- Shows client ip")
-    print("show model accuracy       -- Shows client's current model accuraccy")
-    print("show model loss           -- Shows client's current model loss")
-    print("reset model               -- Resets the clients model")
-    print("quit                      -- Terminates the client program")
+    print("server connection                    -- Shows server connection information")
+    print("my ip                                -- Shows client ip")
+    print("model accuracy                       -- Shows client's current model accuraccy")
+    print("model loss                           -- Shows client's current model loss")
+    print("reset model                          -- Resets the clients model")
+    print("quit                                 -- Terminates the client program")
 
 def client_shell(fclient_obj):
     while True:
         input_cmd = input('>> ')
         if input_cmd == '':
             continue
-        elif input_cmd == 'show connection':
+        elif input_cmd == 'server connection':
             show_connection(fclient_obj)
-        elif input_cmd == 'show my ip':
+        elif input_cmd == 'my ip':
             show_my_ip(fclient_obj)
-        elif input_cmd == 'show model accuracy':
+        elif input_cmd == 'model accuracy':
             show_model_accuracy(fclient_obj)
-        elif input_cmd == 'show model loss':
+        elif input_cmd == 'model loss':
             show_model_loss(fclient_obj)
         elif input_cmd == 'reset model':
             reset_model(fclient_obj)

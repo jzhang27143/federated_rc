@@ -4,6 +4,7 @@ import socket
 import configparser
 import pickle
 import torch
+import numpy as np
 from src.client_utils import client_shell, client_train_MBGD
 from src import network
 
@@ -55,7 +56,7 @@ class FederatedClient:
 
     def train_fed_avg(self, tmp_fname='tmp_client.pt'):
         if self._verbose:
-            print('Beginning Training')
+            print('Waiting for Server to Start Federated Averaging')
 
         network.receive_model_file(self._model_fname, self._socket) # Initial server model
         self._model = torch.load(self._model_fname)
@@ -89,13 +90,7 @@ class FederatedClient:
             preds = predictions.tolist()[0]
             ans = label.tolist()[0]
 
-            maxval = -1
-            maxindex = 0
-            for i in range(len(preds)):
-                if preds[i] > maxval:
-                    maxval = preds[i]
-                    maxindex = i
-            
+            maxindex = np.argmax(preds)
             if maxindex == ans:
                 total_correct += 1
             
