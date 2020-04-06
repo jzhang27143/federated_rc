@@ -73,7 +73,7 @@ class FederatedClient:
             self._model = torch.load(self._model_fname)
 
         if self._verbose:
-            print("Training complete")
+            print("Training Complete")
 
     def calculate_accuracy(self, test):
         total = len(test)

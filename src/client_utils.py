@@ -27,10 +27,6 @@ def client_train_MBGD(train, model, batch_size, lr, momentum, epochs, verbose, e
             loss = criterion(predictions, label)
             loss.backward()
 
-            # avg each gradient update based on batch size
-            for p in model.parameters():
-                p.grad /= batch_size
-
             # update model
             optimizer.step()
 
