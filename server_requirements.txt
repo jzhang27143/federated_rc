@@ -1,3 +1,2 @@
+pytorch
 ifaddr
-torch
-torchvision
