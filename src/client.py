@@ -8,10 +8,12 @@ from src.client_utils import client_shell, client_train_MBGD
 from src import network
 
 class FederatedClient:
-    def __init__(self):
+    def __init__(self, train, test):
         self._model = None
-        self._accuracy = -1
         self._loss = -1
+        self._train = train
+        self._test = test
+
         self.parse_client_options()
         self.configure()
 
@@ -51,7 +53,7 @@ class FederatedClient:
         s.setblocking(0)
         self._socket = s
 
-    def train_fed_avg(self, train, tmp_fname='tmp_client.pt'):
+    def train_fed_avg(self, tmp_fname='tmp_client.pt'):
         if self._verbose:
             print('Beginning Training')
 
@@ -61,8 +63,8 @@ class FederatedClient:
             print('Received Initial Model')
 
         for i in range(self._episodes):
-            update_obj = client_train_MBGD(train, self._model, self._batch_size, self._lr,
-                    self._momentum, self._epochs, self._loss, self._verbose, i)
+            self._loss, update_obj = client_train_MBGD(self._train, self._model, self._batch_size, self._lr,
+                    self._momentum, self._epochs, self._verbose, i)
             pickle.dump(update_obj, open(tmp_fname, 'wb'))
             network.send_model_file(tmp_fname, self._socket) 
             
@@ -76,10 +78,10 @@ class FederatedClient:
         if self._verbose:
             print("Training Complete")
 
-    def calculate_accuracy(self, test):
-        total = len(test)
+    def calculate_accuracy(self):
+        total = len(self._test)
         total_correct = 0
-        test_loader = torch.utils.data.DataLoader(test)
+        test_loader = torch.utils.data.DataLoader(self._test)
 
         for _, batch_data in enumerate(test_loader):
             image, label = batch_data
@@ -97,6 +99,6 @@ class FederatedClient:
             if maxindex == ans:
                 total_correct += 1
             
-        self._accuracy = total_correct / total * 100
+        return total_correct / total * 100
 
 
