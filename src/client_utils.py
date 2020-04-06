@@ -73,7 +73,12 @@ def shell_help():
 
 def client_shell(fclient_obj):
     while True:
-        input_cmd = input('>> ')
+        try:
+            input_cmd = input('>> ')
+        except EOFError:
+            quit(fclient_obj)
+            break
+
         if input_cmd == '':
             continue
         elif input_cmd == 'server connection':

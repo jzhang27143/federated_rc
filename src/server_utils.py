@@ -81,7 +81,12 @@ def shell_help():
 
 def server_shell(fserver_obj):
     while True:
-        input_cmd = input('>> ')
+        try:
+            input_cmd = input('>> ')
+        except EOFError:
+            quit(fserver_obj)
+            break
+
         if input_cmd == '':
             continue
         elif input_cmd == 'connections':

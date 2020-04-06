@@ -33,8 +33,9 @@ class FederatedServer:
             ip_type = int(ipv4)
             adapters = ifaddr.get_adapters()
             for idx, adapter in enumerate(adapters):
-                adapter_name, adapter_ip = adapter.nice_name, adapter.ips[ip_type].ip
-                print('Interface {} Name: {} IP address: {}'.format(idx, adapter_name, adapter_ip))
+                if ip_type < len(adapter.ips):
+                    adapter_name, adapter_ip = adapter.nice_name, adapter.ips[ip_type].ip
+                    print('Interface {} Name: {} IP address: {}'.format(idx, adapter_name, adapter_ip))
 
             selected = False
             while not selected:
@@ -43,7 +44,7 @@ class FederatedServer:
                     selected_address = adapters[adapter_idx].ips[ip_type].ip
                     selected = True
                 except (ValueError, IndexError) as e:
-                    print('Invalid input: Expected integer between 0 and {}'.format(len(adapter) - 1))
+                    print('Invalid input: Expected integer between 0 and {}'.format(len(adapters) - 1))
             return selected_address
 
         config = configparser.ConfigParser()
