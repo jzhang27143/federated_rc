@@ -21,5 +21,5 @@ if __name__ == '__main__':
     geom_data = dataDist.change_distribution("Geometric", skewed_class, num_samples)
     norm_data = dataDist.change_distribution("Normal", skewed_class, num_samples)
 
-    plt.hist([i[1] for i in geom_data])
+    plt.hist([i[1] for i in norm_data])
     plt.show()
