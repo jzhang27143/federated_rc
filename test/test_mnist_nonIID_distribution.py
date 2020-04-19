@@ -1,6 +1,6 @@
 from torchvision import datasets
 import torch
-import data_distribution
+from src import data_distribution
 import matplotlib.pyplot as plt
 
 def fetch_mnist_data():
