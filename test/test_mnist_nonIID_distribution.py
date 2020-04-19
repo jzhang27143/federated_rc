@@ -11,8 +11,6 @@ def fetch_mnist_data():
     test = torch.utils.data.Subset(full_test, range(2000, 2500)) 
     return train, test
 
-## new system, input is "Geometric" or "Normal", then distribution is created based on a switch case. If all cases fail, pick normal distribution. 
-
 if __name__ == '__main__':
     train, test = fetch_mnist_data()
     dataDist = data_distribution.DataDistributor(train, 10)
@@ -20,8 +18,8 @@ if __name__ == '__main__':
     num_samples = 500
     skewed_class = 7
 
-    geom_data = dataDist.geometric_distribution(skewed_class, num_samples)
-    norm_data = dataDist.normal_distribution(skewed_class, num_samples)
+    geom_data = dataDist.change_distribution("Geometric", skewed_class, num_samples)
+    norm_data = dataDist.change_distribution("Normal", skewed_class, num_samples)
 
-    plt.hist([i[1] for i in norm_data])
+    plt.hist([i[1] for i in geom_data])
     plt.show()
