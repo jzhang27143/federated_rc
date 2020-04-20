@@ -23,6 +23,7 @@ class TestModelReceiver:
         s.connect((self.server_ip, self.port))
         s.setblocking(0)
         network.receive_model_file(self.model_fname, s)
+        print('Model Received Successfully')
 
 if __name__ == '__main__':
     TestModelReceiver().test_model_receive()

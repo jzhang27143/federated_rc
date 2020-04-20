@@ -33,6 +33,7 @@ class TestModelSender:
                 continue
 
         network.send_model_file(self.model_fname, client_conn)
+        print('Model Transferred Successfully')
 
 if __name__ == '__main__':
     TestModelSender().test_model_send()
