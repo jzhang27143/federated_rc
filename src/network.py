@@ -52,14 +52,25 @@ def _receive_buffer(socket_conn, buffer_size):
     return data_buffer
 
 def receive_model_file(filename, socket_conn, buffer_size=1024):
-    bytes_remaining = int(_receive_buffer(socket_conn, buffer_size).decode().rstrip('\0'))
+    filesize = int(_receive_buffer(socket_conn, buffer_size).decode().rstrip('\0'))
+    bytes_remaining = ((filesize + buffer_size - 1) // buffer_size) * buffer_size
+    bytes_written = 0
+
     with open(filename, 'wb') as model_serial:
         while bytes_remaining > 0:
-            data = _receive_buffer(socket_conn, buffer_size)
+            data = _receive_buffer(socket_conn, buffer_size if bytes_remaining > buffer_size
+                    else bytes_remaining)
             bytes_remaining -= len(data)
 
-            if bytes_remaining < 0: # Remove trailing 0x00's
-                data = data[:buffer_size + bytes_remaining]
-            model_serial.write(data)
+            if bytes_written == filesize:
+                continue
+            elif bytes_written + len(data) > filesize: # Stop writing at last data buffer
+                data = data[:filesize - bytes_written]
+                model_serial.write(data)
+                bytes_written = filesize
+            else:
+                model_serial.write(data)
+                bytes_written += len(data)
+
     model_serial.close()
 
