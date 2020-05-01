@@ -1,10 +1,24 @@
 import _thread
+import socket
 import threading
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from src import network
-import socket
+
+def error_handle(fclient_obj, err):
+    if err == 0:
+        return
+    else: # Terminate client if server connection lost
+        fclient_obj._quit = True
+        try:
+            fclient_obj._socket.shutdown(socket.SHUT_RDWR)
+        except OSError:
+            pass
+        fclient_obj._socket.close()
+        if fclient_obj._verbose:
+            print('Lost Connection to Server, Terminating Client')
+        exit(0)
 
 # Local mini-batch gradient descent
 def client_train_MBGD(train, model, batch_size, lr, momentum, epochs, verbose, episode):
@@ -58,9 +72,13 @@ def reset_model(fclient_obj):
     print("Model Reset")
 
 def quit(fclient_obj):
-    _thread.interrupt_main()
-    fclient_obj._socket.shutdown(socket.SHUT_RDWR)
+    fclient_obj._quit = True
+    try:
+        fclient_obj._socket.shutdown(socket.SHUT_RDWR)
+    except OSError:
+        pass
     fclient_obj._socket.close()
+    _thread.interrupt_main()
 
 def shell_help():
     print("--------------------------- Client Shell Usage -------------------------------")
@@ -77,6 +95,8 @@ def client_shell(fclient_obj):
             input_cmd = input('>> ')
         except EOFError:
             quit(fclient_obj)
+            break
+        if fclient_obj._quit:
             break
 
         if input_cmd == '':

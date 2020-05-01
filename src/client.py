@@ -1,11 +1,12 @@
 import argparse
-import threading
-import socket
 import configparser
-import pickle
-import torch
 import numpy as np
-from src.client_utils import client_shell, client_train_MBGD
+import pickle
+import signal
+import socket
+import threading
+import torch
+from src.client_utils import client_shell, client_train_MBGD, error_handle
 from src import network
 
 class FederatedClient:
@@ -14,12 +15,18 @@ class FederatedClient:
         self._loss = -1
         self._train = train
         self._test = test
+        self._quit = False
 
         self.parse_client_options()
         self.configure()
 
         if self._interactive:
             threading.Thread(target=client_shell, args=(self,)).start()
+
+        # Suppress error messages from quitting
+        def keyboard_interrupt_handler(signal, frame):
+            exit(0)
+        signal.signal(signal.SIGINT, keyboard_interrupt_handler)
         self.connect_to_server()
 
     def parse_client_options(self):
@@ -58,7 +65,7 @@ class FederatedClient:
         if self._verbose:
             print('Waiting for Server to Start Federated Averaging')
 
-        network.receive_model_file(self._model_fname, self._socket) # Initial server model
+        error_handle(self, network.receive_model_file(self._model_fname, self._socket)) # Initial server model
         self._model = torch.load(self._model_fname)
         if self._verbose:
             print('Received Initial Model')
@@ -67,13 +74,13 @@ class FederatedClient:
             self._loss, update_obj = client_train_MBGD(self._train, self._model, self._batch_size, self._lr,
                     self._momentum, self._epochs, self._verbose, i)
             pickle.dump(update_obj, open(tmp_fname, 'wb'))
-            network.send_model_file(tmp_fname, self._socket) 
+            error_handle(self, network.send_model_file(tmp_fname, self._socket))
             
             if self._verbose:
                 print('Update Object Sent')
 
             # Receive aggregated model from server
-            network.receive_model_file(self._model_fname, self._socket)
+            error_handle(self, network.receive_model_file(self._model_fname, self._socket))
             self._model = torch.load(self._model_fname)
 
         if self._verbose:

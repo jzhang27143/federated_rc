@@ -1,30 +1,59 @@
 import _thread
+import errno
 import threading
 import torch
 import pickle
 import socket
 from src import network
 
+def error_handle(fserver_obj, err, conn_obj):
+    if err == 0:
+        return
+    elif fserver_obj._quit:
+        try:
+            conn_obj[0].shutdown(socket.SHUT_RDWR)
+        except OSError:
+            pass
+        conn_obj[0].close()
+        exit(0)
+    else:
+        # Remove faulty socket connection
+        fserver_obj._connections.remove(conn_obj)
+        try:
+            conn_obj[0].shutdown(socket.SHUT_RDWR)
+        except OSError:
+            pass
+        conn_obj[0].close()
+
 def broadcast_model(fserver_obj):
     torch.save(fserver_obj._model, fserver_obj._model_fname)
-    for socket_conn, addr, server_port in fserver_obj._connections:
-        network.send_model_file(fserver_obj._model_fname, socket_conn)
+    for conn_obj in fserver_obj._connections[:]:
+        error_handle(fserver_obj, network.send_model_file(fserver_obj._model_fname, conn_obj[0]), conn_obj)
 
 def federated_averaging(fserver_obj, tmp_fname='tmp_server.pt'):
     n_tensors = len(list(fserver_obj._model.parameters()))
     broadcast_model(fserver_obj)   # Initialize client models
-    update_objects = [None] * len(fserver_obj._connections)
 
     for episode in range(fserver_obj._episodes):
         if fserver_obj._verbose:
             print('------ Federated Averaging Training Episode {} ------'.format(episode))
 
         # Receive client updates
-        for idx, conn_obj in enumerate(fserver_obj._connections):
-            network.receive_model_file(tmp_fname, conn_obj[0])
-            if fserver_obj._verbose:
-                print('Update Object Received from Client {}'.format(idx))
-            update_objects[idx] = pickle.load(open(tmp_fname, 'rb'))
+        update_objects = list()
+        for idx, conn_obj in enumerate(fserver_obj._connections[:]):
+            err = network.receive_model_file(tmp_fname, conn_obj[0])
+            if err:
+                error_handle(fserver_obj, err, conn_obj)
+                if fserver_obj._verbose:
+                    print('Dropped Connection from Client {}'.format(idx))
+            else:
+                if fserver_obj._verbose:
+                    print('Update Object Received from Client {}'.format(idx))
+                update_objects.append(pickle.load(open(tmp_fname, 'rb')))
+
+        # Stop if all client connections drop
+        if len(fserver_obj._connections) == 0:
+            break
 
         # Compute average aggregated model
         N = sum(obj.n_samples for obj in update_objects)
@@ -65,10 +94,14 @@ def reset_model(fserver_obj):
     print("Model Reset")
 
 def quit(fserver_obj):
-    _thread.interrupt_main()
+    fserver_obj._quit = True
     for conn, addr, server_port in fserver_obj._connections:
-        conn.shutdown(socket.SHUT_RDWR)
+        try:
+            conn.shutdown(socket.SHUT_RDWR)
+        except OSError:
+            pass
         conn.close()
+    _thread.interrupt_main()
 
 def shell_help():
     print("--------------------------- Server Shell Usage -------------------------------")

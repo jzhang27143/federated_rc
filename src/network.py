@@ -1,8 +1,9 @@
-from typing import NamedTuple
+import errno
+import os
+import pickle
 import select
 import socket
-import pickle
-import os
+from typing import NamedTuple
 
 class UpdateObject(NamedTuple):
     n_samples: int
@@ -19,6 +20,9 @@ def _send_buffer(socket_conn, data, buffer_size):
             data_buffer = data_buffer[bytes_sent:]
         except BlockingIOError:
             select.select([], [socket_conn], [])
+        except OSError as e:
+            return e.errno
+    return 0
 
 def _pad_buffer(data_buffer, buffer_size):
     return data_buffer + bytes(buffer_size - len(data_buffer))
@@ -30,14 +34,15 @@ def send_model_file(filename, socket_conn, buffer_size=1024):
 
     # File size sent first to allow socket to persist
     fsize_msg = _pad_buffer(str(filesize).encode(), buffer_size)
-    _send_buffer(socket_conn, fsize_msg, buffer_size)
+    err = _send_buffer(socket_conn, fsize_msg, buffer_size)
 
-    while send_buffer:
+    while not err and send_buffer:
         if len(send_buffer) != buffer_size:
             send_buffer = _pad_buffer(send_buffer, buffer_size)
-        _send_buffer(socket_conn, send_buffer, buffer_size)
+        err = _send_buffer(socket_conn, send_buffer, buffer_size)
         send_buffer = model_serial.read(buffer_size)
     model_serial.close()
+    return err
 
 def _receive_buffer(socket_conn, buffer_size):
     bytes_received = 0
@@ -45,24 +50,32 @@ def _receive_buffer(socket_conn, buffer_size):
     while bytes_received < buffer_size:
         try:
             data = socket_conn.recv(buffer_size)
+            if len(data) == 0: # connection closed by client
+                return data_buffer, errno.ECONNABORTED
             data_buffer += data
             bytes_received += len(data)
         except BlockingIOError:
             select.select([socket_conn], [], [])
-    return data_buffer
+        except OSError as e:
+            return data_buffer, e.errno
+    return data_buffer, 0
 
 def receive_model_file(filename, socket_conn, buffer_size=1024):
-    filesize = int(_receive_buffer(socket_conn, buffer_size).decode().rstrip('\0'))
-    bytes_remaining = ((filesize + buffer_size - 1) // buffer_size) * buffer_size
-    bytes_written = 0
+    filesize_buffer, err = _receive_buffer(socket_conn, buffer_size)
+    if not err:
+        filesize = int(filesize_buffer.decode().rstrip('\0'))
+        bytes_remaining = ((filesize + buffer_size - 1) // buffer_size) * buffer_size
+        bytes_written = 0
+    else:
+        return err
 
     with open(filename, 'wb') as model_serial:
-        while bytes_remaining > 0:
-            data = _receive_buffer(socket_conn, buffer_size if bytes_remaining > buffer_size
-                    else bytes_remaining)
+        while not err and bytes_remaining > 0:
+            data, err = _receive_buffer(socket_conn, buffer_size if bytes_remaining > buffer_size
+                        else bytes_remaining)
             bytes_remaining -= len(data)
 
-            if bytes_written == filesize:
+            if bytes_written == filesize: # Don't write padding bytes
                 continue
             elif bytes_written + len(data) > filesize: # Stop writing at last data buffer
                 data = data[:filesize - bytes_written]
@@ -73,4 +86,4 @@ def receive_model_file(filename, socket_conn, buffer_size=1024):
                 bytes_written += len(data)
 
     model_serial.close()
-
+    return err

@@ -1,15 +1,17 @@
 import argparse
-import threading
-import socket
 import configparser
 import errno
 import ifaddr
+import socket
+import threading
 from src.server_utils import server_shell
 
 class FederatedServer:
     def __init__(self, model):
         self._model = model
         self._connections = list()
+        self._quit = False
+
         self.parse_server_options()
         self.configure()
         if self._interactive:
