@@ -2,7 +2,6 @@ import _thread
 import errno
 import threading
 import torch
-import pickle
 import socket
 from src import network
 
@@ -49,7 +48,7 @@ def federated_averaging(fserver_obj, tmp_fname='tmp_server.pt'):
             else:
                 if fserver_obj._verbose:
                     print('Update Object Received from Client {}'.format(idx))
-                update_objects.append(pickle.load(open(tmp_fname, 'rb')))
+                update_objects.append(torch.load(tmp_fname))
 
         # Stop if all client connections drop
         if len(fserver_obj._connections) == 0:

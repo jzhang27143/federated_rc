@@ -1,7 +1,6 @@
 import argparse
 import configparser
 import numpy as np
-import pickle
 import signal
 import socket
 import threading
@@ -73,7 +72,7 @@ class FederatedClient:
         for i in range(self._episodes):
             self._loss, update_obj = client_train_MBGD(self._train, self._model, self._batch_size, self._lr,
                     self._momentum, self._epochs, self._verbose, i)
-            pickle.dump(update_obj, open(tmp_fname, 'wb'))
+            torch.save(update_obj, tmp_fname)
             error_handle(self, network.send_model_file(tmp_fname, self._socket))
             
             if self._verbose:
