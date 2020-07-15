@@ -33,25 +33,30 @@ def federated_averaging(fserver_obj, tmp_fname='tmp_server.pt'):
     n_tensors = len(list(fserver_obj._model.parameters()))
     broadcast_model(fserver_obj)   # Initialize client models
 
-    for episode in range(fserver_obj._episodes):
+    episode = 0
+    while True:
         if fserver_obj._verbose:
             print('------ Federated Averaging Training Episode {} ------'.format(episode))
 
         # Receive client updates
         update_objects = list()
+        end_session = True
         for idx, conn_obj in enumerate(fserver_obj._connections[:]):
-            err = network.receive_model_file(tmp_fname, conn_obj[0])
+            err, bytes_received = network.receive_model_file(tmp_fname, conn_obj[0])
             if err:
                 error_handle(fserver_obj, err, conn_obj)
                 if fserver_obj._verbose:
                     print('Dropped Connection from Client {}'.format(idx))
             else:
+                # Aggregation stops when all clients send 0 bytes
+                end_session = False if bytes_received else end_session
+                client_model_fname = tmp_fname if bytes_received else fserver_obj._model_fname
                 if fserver_obj._verbose:
                     print('Update Object Received from Client {}'.format(idx))
-                update_objects.append(torch.load(tmp_fname))
+                update_objects.append(torch.load(client_model_fname))
 
         # Stop if all client connections drop
-        if len(fserver_obj._connections) == 0:
+        if len(fserver_obj._connections) == 0 or end_session:
             break
 
         # Compute average aggregated model
@@ -71,6 +76,7 @@ def federated_averaging(fserver_obj, tmp_fname='tmp_server.pt'):
             cur_param.data = agg_param.data
 
         broadcast_model(fserver_obj) # Broadcast aggregated model
+        episode += 1
 
 def show_connections(fserver_obj):
     for conn, addr, server_port in fserver_obj._connections:

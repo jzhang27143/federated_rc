@@ -67,7 +67,7 @@ def receive_model_file(filename, socket_conn, buffer_size=1024):
         bytes_remaining = ((filesize + buffer_size - 1) // buffer_size) * buffer_size
         bytes_written = 0
     else:
-        return err
+        return err, 0
 
     with open(filename, 'wb') as model_serial:
         while not err and bytes_remaining > 0:
@@ -86,4 +86,4 @@ def receive_model_file(filename, socket_conn, buffer_size=1024):
                 bytes_written += len(data)
 
     model_serial.close()
-    return err
+    return err, filesize

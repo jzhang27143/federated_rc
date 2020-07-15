@@ -1,14 +1,26 @@
 import argparse
-import configparser
 import errno
 import ifaddr
+import importlib.machinery
+import os
 import socket
 import threading
+import types
+from typing import NamedTuple
+
 from src.server_utils import server_shell
 
+
+class ServerConfig(NamedTuple):
+    wlan_ip: str
+    port: int
+    model_file_name: str
+
+
 class FederatedServer:
-    def __init__(self, model):
+    def __init__(self, model, configpath=""):
         self._model = model
+        self._configpath = configpath
         self._connections = list()
         self._quit = False
 
@@ -19,14 +31,16 @@ class FederatedServer:
 
     def parse_server_options(self):
         parser = argparse.ArgumentParser(description='Federated Server Options')
-        parser.add_argument('config', nargs=1, help='config file name')
+        parser.add_argument('--configpath', nargs=1, dest='configpath', 
+                            default='', help='config file name')
         parser.add_argument('--interactive', action='store_true', dest='interactive', 
                             help='flag to provide an interactive shell')
         parser.add_argument('--verbose', action='store_true', dest='verbose', 
                             help='flag to provide extra debugging outputs')
         args = parser.parse_args()
 
-        self._config_name = args.config
+        if not self._configpath:
+            self._configpath = args.configpath[0]
         self._interactive = args.interactive
         self._verbose = args.verbose
 
@@ -49,18 +63,19 @@ class FederatedServer:
                     print('Invalid input: Expected integer between 0 and {}'.format(len(adapters) - 1))
             return selected_address
 
-        config = configparser.ConfigParser()
-        config.read(self._config_name)
+        # Fetch config object
+        print(self._configpath, "path")
+        config_name = os.path.basename(self._configpath)
+        loader = importlib.machinery.SourceFileLoader(config_name, self._configpath)
+        config_module = types.ModuleType(loader.name)
+        loader.exec_module(config_module)
+        config = config_module.server_config
 
-        # Configure IP address and port to bind server
-        ip_config = config['Network Config']['WLAN_IP']
+        ip_config, port_config = config.wlan_ip, config.port
         self._wlan_ip = select_interface_address() if ip_config == 'auto-discover' else ip_config
-        port_config = config['Network Config']['PORT']
         self._auto_port = (port_config == 'auto-discover')
         self._port = 0 if self._auto_port else int(port_config)
-
-        self._model_fname = config['Learning Config']['MODEL_FILE_NAME']
-        self._episodes = int(config['Learning Config']['EPISODES'])
+        self._model_fname = config.model_file_name
 
     def run(self):
         while True:

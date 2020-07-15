@@ -1,19 +1,37 @@
 import argparse
-import configparser
+import importlib.machinery
+import os
 import numpy as np
 import signal
 import socket
 import threading
 import torch
+import types
+from typing import NamedTuple
+
 from src.client_utils import client_shell, client_train_MBGD, error_handle
 from src import network
 
+
+class ClientConfig(NamedTuple):
+    server_ip: str
+    port: int
+    model_file_name: str
+    local_epochs: int
+    episodes: int
+    batch_size: int
+    criterion: torch.nn.Module
+    optimizer: torch.optim.Optimizer
+    optimizer_kwargs: dict
+
+
 class FederatedClient:
-    def __init__(self, train, test):
+    def __init__(self, train, test, configpath=""):
         self._model = None
-        self._loss = -1
+        self._loss = None
         self._train = train
         self._test = test
+        self._configpath = configpath
         self._quit = False
 
         self.parse_client_options()
@@ -24,35 +42,42 @@ class FederatedClient:
 
         # Suppress error messages from quitting
         def keyboard_interrupt_handler(signal, frame):
-            exit(0)
+            pass
         signal.signal(signal.SIGINT, keyboard_interrupt_handler)
         self.connect_to_server()
 
     def parse_client_options(self):
         parser = argparse.ArgumentParser(description='Federated Client Options')
-        parser.add_argument('config', nargs=1, help='config file name')
+        parser.add_argument('--configpath', nargs=1, dest='configpath',
+                            default='', help='config file name')
         parser.add_argument('--interactive', action='store_true', dest='interactive', 
                             help='flag to provide an interactive shell')
         parser.add_argument('--verbose', action='store_true', dest='verbose', 
                             help='flag to provide extra debugging outputs')
         args = parser.parse_args()
 
-        self._config_name = args.config
+        if not self._configpath:
+            self._configpath = args.configpath[0]
         self._interactive = args.interactive
         self._verbose = args.verbose
  
     def configure(self):
-        config = configparser.ConfigParser()
-        config.read(self._config_name)
-        self._server_ip = config['Network Config']['SERVER_IP']
-        self._port = int(config['Network Config']['PORT'])
+        # Fetch config object
+        config_name = os.path.basename(self._configpath)
+        loader = importlib.machinery.SourceFileLoader(config_name, self._configpath)
+        config_module = types.ModuleType(loader.name)
+        loader.exec_module(config_module)
+        config = config_module.client_config
 
-        self._model_fname = config['Learning Config']['MODEL_FILE_NAME']
-        self._epochs = int(config['Learning Config']['LOCAL_EPOCHS'])
-        self._episodes = int(config['Learning Config']['EPISODES'])
-        self._batch_size = int(config['Learning Config']['BATCH_SIZE'])
-        self._lr = float(config['Learning Config']['LEARNING_RATE'])
-        self._momentum = float(config['Learning Config']['MOMENTUM'])
+        self._server_ip = config.server_ip
+        self._port = config.port
+        self._model_fname = config.model_file_name
+        self._epochs = config.local_epochs
+        self._episodes = config.episodes
+        self._batch_size = config.batch_size
+        self._criterion = config.criterion
+        self._optim_class = config.optimizer
+        self._optim_kwargs = config.optimizer_kwargs
 
     def connect_to_server(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -64,14 +89,15 @@ class FederatedClient:
         if self._verbose:
             print('Waiting for Server to Start Federated Averaging')
 
-        error_handle(self, network.receive_model_file(self._model_fname, self._socket)) # Initial server model
+        # Initial server model
+        err, _ = network.receive_model_file(self._model_fname, self._socket)
+        error_handle(self, err)
         self._model = torch.load(self._model_fname)
         if self._verbose:
             print('Received Initial Model')
 
-        for i in range(self._episodes):
-            self._loss, update_obj = client_train_MBGD(self._train, self._model, self._batch_size, self._lr,
-                    self._momentum, self._epochs, self._verbose, i)
+        for episode in range(self._episodes):
+            self._loss, update_obj = client_train_MBGD(self, episode)
             torch.save(update_obj, tmp_fname)
             error_handle(self, network.send_model_file(tmp_fname, self._socket))
             
@@ -79,8 +105,15 @@ class FederatedClient:
                 print('Update Object Sent')
 
             # Receive aggregated model from server
-            error_handle(self, network.receive_model_file(self._model_fname, self._socket))
+            err, _ = network.receive_model_file(self._model_fname, self._socket)
+            error_handle(self, err)
             self._model = torch.load(self._model_fname)
+
+        # Send 0 byte file to terminate session
+        closing_file = open(tmp_fname, 'r+')
+        closing_file.truncate(0)
+        closing_file.close()
+        error_handle(self, network.send_model_file(tmp_fname, self._socket))
 
         if self._verbose:
             print("Training Complete")

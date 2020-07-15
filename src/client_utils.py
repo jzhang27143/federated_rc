@@ -4,6 +4,7 @@ import threading
 import torch
 import torch.nn as nn
 import torch.optim as optim
+
 from src import network
 
 def error_handle(fclient_obj, err):
@@ -21,12 +22,18 @@ def error_handle(fclient_obj, err):
         exit(0)
 
 # Local mini-batch gradient descent
-def client_train_MBGD(train, model, batch_size, lr, momentum, epochs, verbose, episode):
-    train_loader = torch.utils.data.DataLoader(train, batch_size=batch_size, shuffle=True)
-    criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
+def client_train_MBGD(fclient_obj, episode):
+    train_loader = torch.utils.data.DataLoader(
+        fclient_obj._train, batch_size=fclient_obj._batch_size, shuffle=True
+    )
+    epochs = fclient_obj._epochs
+    model = fclient_obj._model
+    kwargs = fclient_obj._optim_kwargs
+    kwargs['params'] = model.parameters()
+    optimizer = fclient_obj._optim_class(**kwargs)
+    criterion = fclient_obj._criterion
 
-    if verbose:
+    if fclient_obj._verbose:
         print("------ Episode {} Starting ------".format(episode))
 
     for epoch in range(epochs):
@@ -45,10 +52,12 @@ def client_train_MBGD(train, model, batch_size, lr, momentum, epochs, verbose, e
             optimizer.step()
             running_loss += loss.item()
 
-        if epoch % 2 == 0 and verbose:
+        if epoch % 2 == 0 and fclient_obj._verbose:
             print('Epoch {} Loss: {}'.format(epoch, running_loss))
 
-    return running_loss, network.UpdateObject(len(train), list(model.parameters()))
+    return running_loss, network.UpdateObject(
+        len(fclient_obj._train), list(model.parameters())
+    )
 
 def show_connection(fclient_obj):
     print("Server IP Address: {}, Server Port: {}".format(
