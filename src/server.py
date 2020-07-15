@@ -64,7 +64,6 @@ class FederatedServer:
             return selected_address
 
         # Fetch config object
-        print(self._configpath, "path")
         config_name = os.path.basename(self._configpath)
         loader = importlib.machinery.SourceFileLoader(config_name, self._configpath)
         config_module = types.ModuleType(loader.name)
