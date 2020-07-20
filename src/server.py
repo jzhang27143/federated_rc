@@ -5,16 +5,25 @@ import os
 import signal
 import socket
 import threading
+import torch
 import types
 from typing import NamedTuple
 
-from src.server_utils import server_shell, federated_averaging
+from src import network
+from src.server_utils import (
+    aggregate_models,
+    broadcast_initial_model,
+    broadcast_model,
+    error_handle,
+    server_shell
+)
 
 
 class ServerConfig(NamedTuple):
     wlan_ip: str
     port: int
     model_file_name: str
+    grad_threshold: float = 0.0
 
 
 class FederatedServer:
@@ -91,6 +100,7 @@ class FederatedServer:
         self._auto_port = (port_config == 'auto-discover')
         self._port = 0 if self._auto_port else int(port_config)
         self._model_fname = config.model_file_name
+        self._grad_threshold = config.grad_threshold
 
     def run(self):
         n_clients = 0
@@ -123,4 +133,54 @@ class FederatedServer:
                 break
 
     def start_federated_averaging(self):
-        federated_averaging(self)
+        episode = 0
+        tmp_fname = 'tmp_server.pt'
+        broadcast_initial_model(self)   # Initialize client models
+
+        while True:
+            if self._verbose:
+                print('------ Federated Averaging Training Episode',
+                    '{} ------'.format(episode))
+
+            # Receive client updates
+            update_objects = list()
+            end_session = False
+            for idx, conn_obj in enumerate(self._connections[:]):
+                err, bytes_received = network.receive_model_file(
+                    tmp_fname, conn_obj[0]
+                )
+                if err:
+                    error_handle(self, err, conn_obj)
+                    if self._verbose:
+                        print('Dropped Connection from Client {}'.format(idx))
+                else:
+                    # Aggregation stops when all clients send 0 bytes
+                    update_obj = torch.load(tmp_fname)
+                    end_session = True if not update_obj.session_alive \
+                        else end_session
+
+                    # Use base server model if client declines to send
+                    update_obj = network.UpdateObject(
+                        n_samples = update_obj.n_samples,
+                        model_parameters = list(self._model.parameters())
+                    ) if not update_obj.client_sent else update_obj
+
+                    if self._verbose:
+                        print('Update Received from Client {}'.format(idx))
+                    update_objects.append(update_obj)
+
+            # Stop if all client connections drop
+            if len(self._connections) == 0 or end_session:
+                break
+
+            aggregate_params = aggregate_models(self, update_objects)
+            if self._verbose:
+                print('Finished Averaging Weights')
+
+            for cur_param, agg_param in zip(
+                self._model.parameters(), aggregate_params
+            ):
+                cur_param.data = agg_param.data
+
+            broadcast_model(self) # Broadcast aggregated model
+            episode += 1

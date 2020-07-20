@@ -3,11 +3,21 @@ import os
 import pickle
 import select
 import socket
+import torch.nn as nn
 from typing import NamedTuple
+
+
+class InitialObject(NamedTuple):
+    grad_threshold: float
+    model: nn.Module
+
 
 class UpdateObject(NamedTuple):
     n_samples: int
     model_parameters: list
+    client_sent: bool = True
+    session_alive: bool = True
+
 
 # send and recv are not sufficient due to non-blocking socket
 def _send_buffer(socket_conn, data, buffer_size):

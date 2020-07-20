@@ -7,6 +7,14 @@ import torch.optim as optim
 
 from src import network
 
+def gradient_norm(trained_model, base_model):
+    tensor_norms = list()
+    for trained_tensor, base_tensor in zip(
+        trained_model.parameters(), base_model.parameters()
+    ):
+        tensor_norms.append(torch.norm(trained_tensor - base_tensor))
+    return torch.norm(torch.tensor(tensor_norms))
+
 def error_handle(fclient_obj, err):
     if err == 0:
         return
@@ -21,8 +29,7 @@ def error_handle(fclient_obj, err):
             print('Lost Connection to Server, Terminating Client')
         exit(0)
 
-# Local mini-batch gradient descent
-def client_train_MBGD(fclient_obj, episode):
+def client_train_local(fclient_obj, episode):
     train_loader = torch.utils.data.DataLoader(
         fclient_obj._train, batch_size=fclient_obj._batch_size, shuffle=True
     )
@@ -56,7 +63,8 @@ def client_train_MBGD(fclient_obj, episode):
             print('Epoch {} Loss: {}'.format(epoch, running_loss))
 
     return running_loss, network.UpdateObject(
-        len(fclient_obj._train), list(model.parameters())
+        n_samples = len(fclient_obj._train),
+        model_parameters = list(model.parameters())
     )
 
 def show_connection(fclient_obj):
@@ -125,3 +133,4 @@ def client_shell(fclient_obj):
             break
         else:
             shell_help()
+    exit(0)

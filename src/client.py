@@ -1,4 +1,4 @@
-import argparse
+import copy
 import importlib.machinery
 import os
 import numpy as np
@@ -9,7 +9,12 @@ import torch
 import types
 from typing import NamedTuple
 
-from src.client_utils import client_shell, client_train_MBGD, error_handle
+from src.client_utils import (
+    client_shell,
+    client_train_local,
+    error_handle,
+    gradient_norm
+)
 from src import network
 
 
@@ -55,11 +60,15 @@ class FederatedClient:
             exit(0)
         signal.signal(signal.SIGINT, keyboard_interrupt_handler)
         self.connect_to_server()
+        if self._verbose:
+            print('Server Connection Established')
 
     def configure(self):
         # Fetch config object
         config_name = os.path.basename(self._configpath)
-        loader = importlib.machinery.SourceFileLoader(config_name, self._configpath)
+        loader = importlib.machinery.SourceFileLoader(
+            config_name, self._configpath
+        )
         config_module = types.ModuleType(loader.name)
         loader.exec_module(config_module)
         config = config_module.client_config
@@ -81,33 +90,55 @@ class FederatedClient:
         self._socket = s
 
     def train_fed_avg(self, tmp_fname='tmp_client.pt'):
-        if self._verbose:
-            print('Waiting for Server to Start Federated Averaging')
-
         # Initial server model
         err, _ = network.receive_model_file(self._model_fname, self._socket)
         error_handle(self, err)
-        self._model = torch.load(self._model_fname)
+        initial_object = torch.load(self._model_fname)
+
+        self._grad_threshold = initial_object.grad_threshold
+        self._model = initial_object.model
+        self._base_model = copy.deepcopy(initial_object.model)
         if self._verbose:
             print('Received Initial Model')
 
         for episode in range(self._episodes):
-            self._loss, update_obj = client_train_MBGD(self, episode)
+            self._loss, update_obj = client_train_local(self, episode)
+            # Client declines to send trained model with minimal gradient
+            l2_model_params = gradient_norm(self._model, self._base_model)
+            if (l2_model_params < self._grad_threshold):
+                if self._verbose:
+                    print('Declining Model Update with L2 Norm {}'.format(
+                        l2_model_params)
+                    )
+                update_obj = network.UpdateObject(
+                    n_samples = update_obj.n_samples, 
+                    model_parameters = list(), 
+                    client_sent = False
+                )
+
             torch.save(update_obj, tmp_fname)
-            error_handle(self, network.send_model_file(tmp_fname, self._socket))
+            error_handle(
+                self, network.send_model_file(tmp_fname, self._socket)
+            )
             
             if self._verbose:
                 print('Update Object Sent')
 
             # Receive aggregated model from server
-            err, _ = network.receive_model_file(self._model_fname, self._socket)
+            err, _ = network.receive_model_file(
+                self._model_fname, self._socket
+            )
             error_handle(self, err)
             self._model = torch.load(self._model_fname)
+            self._base_model = copy.deepcopy(self._model)
 
-        # Send 0 byte file to terminate session
-        closing_file = open(tmp_fname, 'r+')
-        closing_file.truncate(0)
-        closing_file.close()
+        # Send false session_alive to terminate session
+        update_obj = network.UpdateObject(
+            n_samples = len(self._train),
+            model_parameters = list(),
+            session_alive = False
+        )
+        torch.save(update_obj, tmp_fname)
         error_handle(self, network.send_model_file(tmp_fname, self._socket))
 
         if self._verbose:
