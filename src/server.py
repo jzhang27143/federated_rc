@@ -1,14 +1,14 @@
-import argparse
 import errno
 import ifaddr
 import importlib.machinery
 import os
+import signal
 import socket
 import threading
 import types
 from typing import NamedTuple
 
-from src.server_utils import server_shell
+from src.server_utils import server_shell, federated_averaging
 
 
 class ServerConfig(NamedTuple):
@@ -18,66 +18,83 @@ class ServerConfig(NamedTuple):
 
 
 class FederatedServer:
-    def __init__(self, model, configpath=""):
-        self._model = model
+    def __init__(
+        self,
+        model_class,
+        configpath="",
+        interactive=False,
+        verbose=False,
+        listen_forever=True,
+        n_clients=None
+    ):
+        assert_msg = 'n_clients must be defined when listen_forever is false'
+        assert listen_forever or isinstance(n_clients, int), assert_msg
+
+        self._model_class = model_class
+        self._model = model_class()
         self._configpath = configpath
+        self._interactive = interactive
+        self._verbose = verbose
+        self._listen_forever = listen_forever
+        self._n_clients = n_clients
+
         self._connections = list()
         self._quit = False
-
-        self.parse_server_options()
         self.configure()
         if self._interactive:
-            threading.Thread(target=server_shell, args=(self,)).start()
+            self._shell = threading.Thread(target=server_shell, args=(self,))
+            self._shell.setDaemon(True)
+            self._shell.start()
 
-    def parse_server_options(self):
-        parser = argparse.ArgumentParser(description='Federated Server Options')
-        parser.add_argument('--configpath', nargs=1, dest='configpath', 
-                            default='', help='config file name')
-        parser.add_argument('--interactive', action='store_true', dest='interactive', 
-                            help='flag to provide an interactive shell')
-        parser.add_argument('--verbose', action='store_true', dest='verbose', 
-                            help='flag to provide extra debugging outputs')
-        args = parser.parse_args()
-
-        if not self._configpath:
-            self._configpath = args.configpath[0]
-        self._interactive = args.interactive
-        self._verbose = args.verbose
+        # Suppress error messages from quitting
+        def keyboard_interrupt_handler(signal, frame):
+            exit(0)
+        signal.signal(signal.SIGINT, keyboard_interrupt_handler)
 
     def configure(self):
-        def select_interface_address(ipv4=True):
+        def select_interface(ipv4=True):
             ip_type = int(ipv4)
             adapters = list(ifaddr.get_adapters())
             for idx, adapter in enumerate(adapters):
                 if ip_type < len(adapter.ips):
-                    adapter_name, adapter_ip = adapter.nice_name, adapter.ips[ip_type].ip
-                    print('Interface {} Name: {} IP address: {}'.format(idx, adapter_name, adapter_ip))
+                    adapter_name = adapter.nice_name
+                    adapter_ip = adapter.ips[ip_type].ip
+                    print('Interface {} Name: {} IP address: {}'.format(
+                        idx, adapter_name, adapter_ip)
+                    )
 
             selected = False
             while not selected:
                 try:
-                    adapter_idx = int(input('Enter selected interface number: '))
+                    adapter_idx = int(
+                        input('Enter selected interface number: ')
+                    )
                     selected_address = adapters[adapter_idx].ips[ip_type].ip
                     selected = True
                 except (ValueError, IndexError) as e:
-                    print('Invalid input: Expected integer between 0 and {}'.format(len(adapters) - 1))
+                    print('Invalid input: Expected integer',
+                        'between 0 and {}'.format(len(adapters) - 1))
             return selected_address
 
         # Fetch config object
         config_name = os.path.basename(self._configpath)
-        loader = importlib.machinery.SourceFileLoader(config_name, self._configpath)
+        loader = importlib.machinery.SourceFileLoader(
+            config_name, self._configpath
+        )
         config_module = types.ModuleType(loader.name)
         loader.exec_module(config_module)
         config = config_module.server_config
 
         ip_config, port_config = config.wlan_ip, config.port
-        self._wlan_ip = select_interface_address() if ip_config == 'auto-discover' else ip_config
+        self._wlan_ip = select_interface() if ip_config == 'auto-discover' \
+            else ip_config
         self._auto_port = (port_config == 'auto-discover')
         self._port = 0 if self._auto_port else int(port_config)
         self._model_fname = config.model_file_name
 
     def run(self):
-        while True:
+        n_clients = 0
+        while self._listen_forever or n_clients < self._n_clients:
             try:
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.setblocking(0)
@@ -100,6 +117,10 @@ class FederatedServer:
 
                 self._connections.append((client_conn, client_addr, self._port))
                 self._port = 0 if self._auto_port else self._port + 1
+                n_clients += 1
 
             except KeyboardInterrupt:
                 break
+
+    def start_federated_averaging(self):
+        federated_averaging(self)

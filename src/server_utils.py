@@ -91,12 +91,7 @@ def show_server_ip(fserver_obj):
     print("Server IP Address: {}".format(fserver_obj._wlan_ip))
 
 def reset_model(fserver_obj):
-    def weights_init(m):
-        if isinstance(m, torch.nn.Conv2d) or isinstance(m, torch.nn.Linear):
-            torch.nn.init.xavier_uniform_(m.weight.data)
-
-    fserver_obj._model.apply(weights_init)
-    print("Model Reset")
+    fserver_obj._model = fserver_obj._model_class()
 
 def quit(fserver_obj):
     fserver_obj._quit = True
@@ -142,3 +137,4 @@ def server_shell(fserver_obj):
             break
         else:
             shell_help()
+    exit(0)

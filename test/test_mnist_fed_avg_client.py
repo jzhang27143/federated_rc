@@ -1,7 +1,8 @@
+import argparse
 import torch
 from torchvision import transforms, datasets
+
 from src import client
-from models.sample_mnist_cnn import Net
 
 def fetch_mnist_data():
     tensor_transform = transforms.Compose([transforms.ToTensor()])
@@ -12,7 +13,32 @@ def fetch_mnist_data():
     test = torch.utils.data.Subset(full_test, range(2000, 2500)) 
     return train, test
 
-if __name__ == '__main__':
+def launch_federated_client(args):
     train, test = fetch_mnist_data()
-    fc = client.FederatedClient(train, test)
+    fc = client.FederatedClient(
+        train,
+        test,
+        configpath = args.configpath[0],
+        interactive = args.interactive,
+        verbose = args.verbose
+    )
     fc.train_fed_avg()
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        description='Federated Client Options'
+    )
+    parser.add_argument(
+        '--configpath', nargs=1, dest='configpath',
+        default='', help='config file name'
+    )
+    parser.add_argument(
+        '--interactive', action='store_true', dest='interactive',
+        help='flag to provide an interactive shell'
+    )
+    parser.add_argument(
+        '--verbose', action='store_true', dest='verbose',
+        help='flag to provide extra debugging outputs'
+    )
+    args = parser.parse_args()
+    launch_federated_client(args)
