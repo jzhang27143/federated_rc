@@ -53,8 +53,8 @@ def broadcast_model(fserver_obj):
             conn_obj
         )
 
-def aggregate_models(fserver_obj, update_objects):
-    n_tensors = len(list(fserver_obj._model.parameters()))
+def aggregate_models(update_objects):
+    n_tensors = len(update_objects[0].model_parameters)
     N = sum(obj.n_samples for obj in update_objects)
     avg_weights = list(obj.n_samples / N for obj in update_objects)
 

@@ -173,7 +173,7 @@ class FederatedServer:
             if len(self._connections) == 0 or end_session:
                 break
 
-            aggregate_params = aggregate_models(self, update_objects)
+            aggregate_params = aggregate_models(update_objects)
             if self._verbose:
                 print('Finished Averaging Weights')
 
