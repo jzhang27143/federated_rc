@@ -32,6 +32,11 @@ To configure the server, create a FederatedServer object and a corresponding con
         grad_threshold = 0.5				# Threshold for optimal client sampling
     )
 ```
+The example server can be run from federated\_rc using
+```shell
+python3 -m test.test_mnist_fed_avg_server --configpath test/config/mnist_server_config.py
+```
+This will cause the server to wait for the clients to connect. If ```auto-discover``` is specified, the server will list the addresses of all interfaces and prompt the user to select. Note a Wi-Fi interface will be necessary for remote clients.
 
 # Execution Procedure
 The following section demonstrates the steps to start a federated scheme using the FederatedServer and FederatedClient instances in the MNIST test scripts (test/mnist_fed_avg_server.py and test/mnist_fed_avg_client.py).<br><br>
