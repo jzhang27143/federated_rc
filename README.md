@@ -10,7 +10,7 @@ To configure the server, create a FederatedServer object and a corresponding con
 
 ### Server Construction
 ```python 
-    fs = server.FederatedServer(
+    fs = FederatedServer(
         Net,					# class of model to train
         configpath = args.configpath[0],  	# path to server config file
         interactive = args.interactive,		# boolean whether to launch an interactive shell 
@@ -26,10 +26,10 @@ To configure the server, create a FederatedServer object and a corresponding con
 ### Server Configuration
 ```python
     server_config = ServerConfig( 
-        wlan_ip = 'auto-discover',			# Interface address to bind server to
-        port = '8880',					# Port to bind server to
-        model_file_name = 'mnist_sample_cnn_server.pt',	# File path to save the final aggregated model
-        grad_threshold = 0.5				# Threshold for optimal client sampling
+        wlan_ip = 'auto-discover',			# interface address to bind server to
+        port = '8880',					# port to bind server to
+        model_file_name = 'mnist_sample_cnn_server.pt',	# file path to save the final aggregated model
+        grad_threshold = 0.5				# threshold for optimal client sampling
     )
 ```
 The example server can be run from federated\_rc using
@@ -38,15 +38,42 @@ python3 -m test.test_mnist_fed_avg_server --configpath test/config/mnist_server_
 ```
 This will cause the server to wait for the clients to connect. If ```auto-discover``` is specified, the server will list the addresses of all interfaces and prompt the user to select. Note a Wi-Fi interface will be necessary for remote clients.
 
-# Execution Procedure
-The following section demonstrates the steps to start a federated scheme using the FederatedServer and FederatedClient instances in the MNIST test scripts (test/mnist_fed_avg_server.py and test/mnist_fed_avg_client.py).<br><br>
+## Setting Up the Clients
+To connect client devices to the server, create a FederatedClient object and a corresponding config file similar to those of the server. The examples below are taken from test/test\_mnist\_fed\_avg\_client.py and test/config/mnist\_client\_config.py.
 
-First, launch the federated server script. The --interactive flag creates a shell for user interaction. To avoid device discovery issues, it is recommended that the IP address in the config file be the address of the wifi interface e.g. wifi0 or wlan0. The following command accomplishes this for the MNIST example.<br>
-python3 -m test.test_mnist_fed_avg_server test/config/mnist_fed_avg_server_config.ini --interactive [--verbose]
-<br><br>
+### Client Construction
+```python
+    # define your training and test datasets
+    fc = FederatedClient(
+        train,					# training dataset
+        test,					# test dataset
+        configpath = args.configpath[0],	# path to client config file
+        interactive = args.interactive,		# boolean whether to launch an interactive shell
+        verbose = args.verbose			# boolean whether to log results in execution
+    )
+    fc.train_fed_avg()
+```
 
-Next, launch the federated client script. The configuration file allows the client device to connect to the server. For the MNIST example, the command below begins the client:<br>
-python3 -m test.test_mnist_fed_avg_client test/config/mnist_fed_avg_client_config.ini --interactive [--verbose]
-<br><br>
+### Client Configuration
+```python
+    client_config = ClientConfig(
+        server_ip = '192.168.254.19',			# IP address of the FederatedServer
+        port = 8880,					# port to connect with the FederatedServer
+        model_file_name = 'mnist_sample_cnn_client.pt',	# file path to save the final client model
+        local_epochs = 10,				# number of local training epochs before each aggregation
+        episodes = 1,					# number of aggregation iterations
+        batch_size = 1,					# number of data points per batch
+        criterion = nn.CrossEntropyLoss(),		# torch training criterion
+        optimizer = optim.SGD,				# torch optim class
+        optimizer_kwargs = {				# argument dictionary for chosen optimizer
+            'lr': 0.001,
+            'momentum': 0.9
+        }
+    )
+```
+The example client can be launched from federated\_rc using
+```shell
+python3 -m test.test_mnist_fed_avg_client --configpath test/config/mnist_client_config.py
+```
 
-Finally, FederatedAveraging can begin by entering 'start federated averaging' in the server's shell. At this point, the client devices begin training, and the federated cycle proceeds.
+Once all of the clients have been connected with the server, the server will automatically begin federating if ```n_clients``` is specified. If the server is in ```listen_forever``` mode, one can begin the process by entering ```start federated averaging``` in the server's interactive shell.
