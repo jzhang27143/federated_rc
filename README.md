@@ -1,6 +1,11 @@
-## Federated Learning Under Resource Constraints
+# Federated Learning Under Resource Constraints
 
-federated_rc is a PyTorch framework for federated learning. In particular, this project studies strategies for bandwidth efficiency in a federated scheme by building on the standard FederatedAveraging Algorithm.
+federated_rc is a general PyTorch framework for federated learning. This project studies strategies for bandwidth efficiency in a federated setting by building on the standard FederatedAveraging Algorithm. In particular, federated_rc adds three options for client-driven bandwidth reduction:
+ - Compression by transmitting the largest model parameters
+ - Network pruning via a randomized greedy adaptation of Optimal Brain Surgeon
+ - Optimal client sampling by conditionally transmitting client models based on gradient thresholds
+
+## Setting Up the Server
 
 ## Execution Procedure
 The following section demonstrates the steps to start a federated scheme using the FederatedServer and FederatedClient instances in the MNIST test scripts (test/mnist_fed_avg_server.py and test/mnist_fed_avg_client.py).<br><br>
