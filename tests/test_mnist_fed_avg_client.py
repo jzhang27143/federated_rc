@@ -2,7 +2,7 @@ import argparse
 import torch
 from torchvision import transforms, datasets
 
-from src import client
+from federatedrc.client import FederatedClient
 
 def fetch_mnist_data():
     tensor_transform = transforms.Compose([transforms.ToTensor()])
@@ -15,7 +15,7 @@ def fetch_mnist_data():
 
 def launch_federated_client(args):
     train, test = fetch_mnist_data()
-    fc = client.FederatedClient(
+    fc = FederatedClient(
         train,
         test,
         configpath = args.configpath[0],

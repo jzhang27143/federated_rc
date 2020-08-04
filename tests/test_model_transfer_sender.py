@@ -1,7 +1,7 @@
 import argparse
 import configparser
 import socket
-from src import network
+from federatedrc import network
 
 class TestModelSender:
     def __init__(self):

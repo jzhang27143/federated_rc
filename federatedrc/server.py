@@ -9,8 +9,8 @@ import torch
 import types
 from typing import NamedTuple
 
-from src import network
-from src.server_utils import (
+from federatedrc import network
+from federatedrc.server_utils import (
     aggregate_models,
     broadcast_initial_model,
     broadcast_model,

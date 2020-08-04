@@ -1,10 +1,10 @@
 import argparse
 
-from src import server
+from federatedrc.server import FederatedServer
 from models.sample_mnist_cnn import Net
 
 def launch_federated_server(args):
-    fs = server.FederatedServer(
+    fs = FederatedServer(
         Net,
         configpath = args.configpath[0],
         interactive = args.interactive,

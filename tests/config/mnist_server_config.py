@@ -1,4 +1,4 @@
-from src.server import ServerConfig
+from federatedrc.server import ServerConfig
 
 server_config = ServerConfig(
     wlan_ip = 'auto-discover',

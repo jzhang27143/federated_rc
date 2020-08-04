@@ -9,13 +9,13 @@ import torch
 import types
 from typing import NamedTuple
 
-from src.client_utils import (
+from federatedrc.client_utils import (
     client_shell,
     client_train_local,
     error_handle,
     gradient_norm
 )
-from src import network
+from federatedrc import network
 
 
 class ClientConfig(NamedTuple):

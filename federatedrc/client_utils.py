@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-from src import network
+from federatedrc import network
 
 def gradient_norm(trained_model, base_model):
     tensor_norms = list()

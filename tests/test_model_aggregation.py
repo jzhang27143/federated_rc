@@ -2,8 +2,8 @@ import argparse
 import numpy as np
 import torch
 
-from src.network import UpdateObject
-from src.server_utils import aggregate_models
+from federatedrc.network import UpdateObject
+from federatedrc.server_utils import aggregate_models
 
 
 def generate_tensor_list():

@@ -4,7 +4,7 @@ import threading
 import torch
 import socket
 
-from src import network
+from federatedrc import network
 
 def error_handle(fserver_obj, err, conn_obj):
     if err == 0:

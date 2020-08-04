@@ -6,7 +6,7 @@ federated\_rc is a general PyTorch framework for federated learning. This projec
  - Optimal client sampling by conditionally transmitting client models based on gradient thresholds
 
 ## Setting Up the Server
-To configure the server, create a FederatedServer object and a corresponding config file. The examples below are taken from test/test\_mnist\_fed\_avg\_server.py and test/config/mnist\_server\_config.py.
+To configure the server, create a FederatedServer object and a corresponding config file. The examples below are taken from tests/test\_mnist\_fed\_avg\_server.py and tests/config/mnist\_server\_config.py.
 
 ### Server Construction
 ```python 
@@ -34,12 +34,12 @@ To configure the server, create a FederatedServer object and a corresponding con
 ```
 The example server can be run from federated\_rc using
 ```shell
-python3 -m test.test_mnist_fed_avg_server --configpath test/config/mnist_server_config.py
+python3 -m tests.test_mnist_fed_avg_server --configpath tests/config/mnist_server_config.py
 ```
 This will cause the server to wait for the clients to connect. If ```auto-discover``` is specified, the server will list the addresses of all interfaces and prompt the user to select. Note a Wi-Fi interface will be necessary for remote clients.
 
 ## Setting Up the Clients
-To connect client devices to the server, create a FederatedClient object and a corresponding config file similar to those of the server. The examples below are taken from test/test\_mnist\_fed\_avg\_client.py and test/config/mnist\_client\_config.py.
+To connect client devices to the server, create a FederatedClient object and a corresponding config file similar to those of the server. The examples below are taken from tests/test\_mnist\_fed\_avg\_client.py and tests/config/mnist\_client\_config.py.
 
 ### Client Construction
 ```python
@@ -73,7 +73,7 @@ To connect client devices to the server, create a FederatedClient object and a c
 ```
 The example client can be launched from federated\_rc using
 ```shell
-python3 -m test.test_mnist_fed_avg_client --configpath test/config/mnist_client_config.py
+python3 -m tests.test_mnist_fed_avg_client --configpath tests/config/mnist_client_config.py
 ```
 
 Once all of the clients have been connected with the server, the server will automatically begin federating if ```n_clients``` is specified. If the server is in ```listen_forever``` mode, one can begin the process by entering ```start federated averaging``` in the server's interactive shell.
