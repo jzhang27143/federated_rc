@@ -5,6 +5,16 @@ federated\_rc is a general PyTorch framework for federated learning. This projec
  - Network pruning via a randomized greedy adaptation of Optimal Brain Surgeon
  - Optimal client sampling by conditionally transmitting client models based on gradient thresholds
 
+## Installation
+Install the required packages using
+```shell
+pip install -r requirements.txt -f https://download.pytorch.org/whl/torch_stable.html
+```
+To use federatedrc as a package, install the package using
+```shell
+python3 setup.py install
+```
+
 ## Setting Up the Server
 To configure the server, create a FederatedServer object and a corresponding config file. The examples below are taken from tests/test\_mnist\_fed\_avg\_server.py and tests/config/mnist\_server\_config.py.
 
