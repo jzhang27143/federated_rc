@@ -6,7 +6,10 @@ import signal
 import socket
 import threading
 import numpy as np
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 import torch
+from datetime import datetime as dt
 import types
 from typing import NamedTuple
 import matplotlib.pyplot as plt
@@ -193,7 +196,7 @@ class FederatedServer:
 
             # Stop if all client connections drop
             if len(self._connections) == 0 or end_session:
-                self.plot_results()
+                #self.plot_results()
                 break
 
             aggregate_params = aggregate_models(update_objects)
@@ -206,6 +209,7 @@ class FederatedServer:
                 cur_param.data = agg_param.data
 
             broadcast_model(self) # Broadcast aggregated model
-            self.stats.append(test_model(self._model))
+            #self.stats.append(test_model(self._model))
+            torch.save(self._model,"{}_Episode_{}".format(dt.now(),episode))
             episode += 1
 

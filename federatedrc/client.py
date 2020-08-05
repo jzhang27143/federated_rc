@@ -145,7 +145,7 @@ class FederatedClient:
         )
         torch.save(update_obj, tmp_fname)
         error_handle(self, network.send_model_file(tmp_fname, self._socket))
-        self.plot_results()
+        #self.plot_results()
         if self._verbose:
             print("Training Complete")
 
