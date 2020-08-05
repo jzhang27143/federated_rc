@@ -9,6 +9,7 @@ import torch
 import types
 import json
 from typing import NamedTuple
+import matplotlib.pyplot as plt
 from datetime import datetime as dt
 
 from federatedrc.client_utils import (
@@ -64,6 +65,7 @@ class FederatedClient:
         self.connect_to_server()
         if self._verbose:
             print('Server Connection Established')
+        self.stats_dict = dict()
 
     def configure(self):
         # Fetch config object
@@ -102,10 +104,9 @@ class FederatedClient:
         self._base_model = copy.deepcopy(initial_object.model)
         if self._verbose:
             print('Received Initial Model')
-        stats_dict = dict()
         for episode in range(self._episodes):
             self._loss, update_obj, stats = client_train_local(self, episode)
-            stats_dict["episode_{}".format(episode)] = stats
+            self.stats_dict["episode_{}".format(episode)] = stats
             # Client declines to send trained model with minimal gradient
             l2_model_params = gradient_norm(self._model, self._base_model)
             if (l2_model_params < self._grad_threshold):
@@ -135,7 +136,7 @@ class FederatedClient:
             self._model = torch.load(self._model_fname)
             self._base_model = copy.deepcopy(self._model)
         with open('logs/CLIENT_DUMP_{}.json'.format(dt.now()),'x') as fp:
-            json.dump(stats_dict,fp)
+            json.dump(self.stats_dict,fp)
         # Send false session_alive to terminate session
         update_obj = network.UpdateObject(
             n_samples = len(self._train),
@@ -144,7 +145,7 @@ class FederatedClient:
         )
         torch.save(update_obj, tmp_fname)
         error_handle(self, network.send_model_file(tmp_fname, self._socket))
-
+        self.plot_results()
         if self._verbose:
             print("Training Complete")
 
@@ -165,29 +166,26 @@ class FederatedClient:
             
         return total_correct / total * 100
 
-    def calculate_total_accuracy(self):
-        total = len(self._test)
-        total_correct = 0
-        test_loader = torch.utils.data.DataLoader(self._test)
-
-        for _, batch_data in enumerate(test_loader):
-            image, label = batch_data
-            predictions = self._model(image)
-            preds = predictions.tolist()[0]
-            ans = label.tolist()[0]
-
-            maxindex = np.argmax(preds)
-            if maxindex == ans:
-                total_correct += 1
-        total+=len(self._train)
-        test_loader = torch.utils.data.DataLoader(self._train)
-        for _, batch_data in enumerate(test_loader):
-            image, label = batch_data
-            predictions = self._model(image)
-            preds = predictions.tolist()[0]
-            ans = label.tolist()[0]
-            maxindex = np.argmax(preds)
-            if maxindex == ans:
-                total_correct += 1
-        return total_correct / total * 100
-
+    def plot_results(self):
+        fig, ax1 = plt.subplots()
+        data1 = list()
+        data2 = list()
+        data = [(k,v) for k,v in self.stats_dict.items()]
+        data.sort(key = lambda x: x[0])
+        for episode, dat in data:
+            for el in dat:
+                data1.append(el[0])
+                data2.append(el[1])
+        t = np.arange(1, 1+len(data1), 1)
+        color = 'tab:red'
+        ax1.set_xlabel('Epochs')
+        ax1.set_ylabel('Loss', color=color)
+        ax1.plot(t, data1, color=color)
+        ax1.tick_params(axis='y', labelcolor=color)
+        ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+        color = 'tab:blue'
+        ax2.set_ylabel('Accuracy (%)', color=color)  # we already handled the x-label with ax1
+        ax2.plot(t, data2, color=color)
+        ax2.tick_params(axis='y', labelcolor=color)
+        fig.tight_layout()  # otherwise the right y-label is slightly clipped
+        plt.show()

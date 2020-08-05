@@ -97,6 +97,9 @@ def quit(fclient_obj):
     fclient_obj._socket.close()
     _thread.interrupt_main()
 
+def generate_chart(fclient_obj):
+    fclient_obj.plot_results()
+
 def shell_help():
     print("--------------------------- Client Shell Usage -------------------------------")
     print("server connection                    -- Shows server connection information")
@@ -104,6 +107,7 @@ def shell_help():
     print("model accuracy                       -- Shows client's current model accuraccy")
     print("model loss                           -- Shows client's current model loss")
     print("reset model                          -- Resets the clients model")
+    print("generate chart                       -- Generates and saves a chart using most recent log data")
     print("quit                                 -- Terminates the client program")
 
 def client_shell(fclient_obj):
@@ -128,6 +132,8 @@ def client_shell(fclient_obj):
             show_model_loss(fclient_obj)
         elif input_cmd == 'reset model':
             reset_model(fclient_obj)
+        elif input_cmd == 'generate chart':
+            generate_chart(fclient_obj)
         elif input_cmd == 'quit':
             quit(fclient_obj)
             break
