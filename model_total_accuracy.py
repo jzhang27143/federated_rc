@@ -21,7 +21,8 @@ test_loader = torch.utils.data.DataLoader(
 				])),
 				batch_size=batch_size_test, shuffle=True)
 
-def test():
+def test(path):
+	model = torch.load(path)
 	model.eval()
 	test_loss = 0
 	correct = 0
@@ -34,6 +35,7 @@ def test():
 		test_loss /= len(test_loader.dataset)
 		test_losses.append(test_loss)
 		print('\nTest set: Avg. loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(test_loss, correct, len(test_loader.dataset),	100. * correct / len(test_loader.dataset)))
+	return test_loss, (100. * correct / len(test_loader.dataset))
 
 if __name__=="__main__":
 	parser = argparse.ArgumentParser(description='Accuracy Script Options')
@@ -41,4 +43,4 @@ if __name__=="__main__":
 	path = parser.parse_args().modelpath[0]
 	print(path)
 	model = torch.load(path)
-	test()
+	test(path)
