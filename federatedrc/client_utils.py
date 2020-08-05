@@ -39,7 +39,7 @@ def client_train_local(fclient_obj, episode):
     kwargs['params'] = model.parameters()
     optimizer = fclient_obj._optim_class(**kwargs)
     criterion = fclient_obj._criterion
-
+    stats=[]
     if fclient_obj._verbose:
         print("------ Episode {} Starting ------".format(episode))
 
@@ -58,14 +58,14 @@ def client_train_local(fclient_obj, episode):
             # update model
             optimizer.step()
             running_loss += loss.item()
-
+        stats.append((running_loss,fclient_obj.calculate_accuracy()))
         if epoch % 2 == 0 and fclient_obj._verbose:
             print('Epoch {} Loss: {}'.format(epoch, running_loss))
 
     return running_loss, network.UpdateObject(
         n_samples = len(fclient_obj._train),
         model_parameters = list(model.parameters())
-    )
+    ), stats
 
 def show_connection(fclient_obj):
     print("Server IP Address: {}, Server Port: {}".format(

@@ -7,7 +7,9 @@ import socket
 import threading
 import torch
 import types
+import json
 from typing import NamedTuple
+from datetime import datetime as dt
 
 from federatedrc.client_utils import (
     client_shell,
@@ -100,9 +102,10 @@ class FederatedClient:
         self._base_model = copy.deepcopy(initial_object.model)
         if self._verbose:
             print('Received Initial Model')
-
+        stats_dict = dict()
         for episode in range(self._episodes):
-            self._loss, update_obj = client_train_local(self, episode)
+            self._loss, update_obj, stats = client_train_local(self, episode)
+            stats_dict["episode_{}".format(episode)] = stats
             # Client declines to send trained model with minimal gradient
             l2_model_params = gradient_norm(self._model, self._base_model)
             if (l2_model_params < self._grad_threshold):
@@ -131,7 +134,8 @@ class FederatedClient:
             error_handle(self, err)
             self._model = torch.load(self._model_fname)
             self._base_model = copy.deepcopy(self._model)
-
+        with open('logs/CLIENT_DUMP_{}.json'.format(dt.now()),'x') as fp:
+            json.dump(stats_dict,fp)
         # Send false session_alive to terminate session
         update_obj = network.UpdateObject(
             n_samples = len(self._train),
