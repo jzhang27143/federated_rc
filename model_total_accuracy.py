@@ -21,8 +21,10 @@ test_loader = torch.utils.data.DataLoader(
 				])),
 				batch_size=batch_size_test, shuffle=True)
 
-def test(path):
+def test_model_from_path(path):
 	model = torch.load(path)
+	return test_model(model)
+def test_model(model):
 	model.eval()
 	test_loss = 0
 	correct = 0
@@ -43,4 +45,4 @@ if __name__=="__main__":
 	path = parser.parse_args().modelpath[0]
 	print(path)
 	model = torch.load(path)
-	test(path)
+	test_model_from_path(path)
