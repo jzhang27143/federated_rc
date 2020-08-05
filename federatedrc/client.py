@@ -165,4 +165,29 @@ class FederatedClient:
             
         return total_correct / total * 100
 
+    def calculate_total_accuracy(self):
+        total = len(self._test)
+        total_correct = 0
+        test_loader = torch.utils.data.DataLoader(self._test)
+
+        for _, batch_data in enumerate(test_loader):
+            image, label = batch_data
+            predictions = self._model(image)
+            preds = predictions.tolist()[0]
+            ans = label.tolist()[0]
+
+            maxindex = np.argmax(preds)
+            if maxindex == ans:
+                total_correct += 1
+        total+=len(self._train)
+        test_loader = torch.utils.data.DataLoader(self._train)
+        for _, batch_data in enumerate(test_loader):
+            image, label = batch_data
+            predictions = self._model(image)
+            preds = predictions.tolist()[0]
+            ans = label.tolist()[0]
+            maxindex = np.argmax(preds)
+            if maxindex == ans:
+                total_correct += 1
+        return total_correct / total * 100
 
