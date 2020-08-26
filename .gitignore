@@ -4,3 +4,7 @@
 /**/*.pyc
 /**/*.pt
 /data/*
+/build
+/dist
+*.vscode
+federatedrc.egg-info/
