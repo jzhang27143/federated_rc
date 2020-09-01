@@ -1,4 +1,7 @@
 import _thread
+from collections import defaultdict
+import matplotlib.pyplot as plt
+import multiprocessing
 import socket
 import threading
 import torch
@@ -39,13 +42,13 @@ def client_train_local(fclient_obj, episode):
     kwargs['params'] = model.parameters()
     optimizer = fclient_obj._optim_class(**kwargs)
     criterion = fclient_obj._criterion
+    stats = defaultdict(list)
 
     if fclient_obj._verbose:
         print("------ Episode {} Starting ------".format(episode))
 
     for epoch in range(epochs):
         running_loss = 0
-
         for batch_idx, batch_data in enumerate(train_loader):
             image, label = batch_data
             optimizer.zero_grad()
@@ -58,6 +61,14 @@ def client_train_local(fclient_obj, episode):
             # update model
             optimizer.step()
             running_loss += loss.item()
+
+        shared_test_acc = None if not fclient_obj._shared_test else \
+            fclient_obj.calculate_accuracy(shared_test=True)
+        fclient_obj.update_training_history(
+            running_loss,
+            fclient_obj.calculate_accuracy(),
+            shared_test_acc=shared_test_acc,
+        )
 
         if epoch % 2 == 0 and fclient_obj._verbose:
             print('Epoch {} Loss: {}'.format(epoch, running_loss))
@@ -80,14 +91,6 @@ def show_model_accuracy(fclient_obj):
 def show_model_loss(fclient_obj):
     print("Client Model Loss: {}".format(fclient_obj._loss))
 
-def reset_model(fclient_obj):
-    def weights_init(m):
-        if isinstance(m, torch.nn.Conv2d) or isinstance(m, torch.nn.Linear):
-            torch.nn.init.xavier_uniform_(m.weight.data)
-
-    fclient_obj._model.apply(weights_init)
-    print("Model Reset")
-
 def quit(fclient_obj):
     fclient_obj._quit = True
     try:
@@ -97,13 +100,37 @@ def quit(fclient_obj):
     fclient_obj._socket.close()
     _thread.interrupt_main()
 
+def plot_training_history(fclient_obj):
+    p = multiprocessing.Process(
+        target=plot_results, 
+        args=(fclient_obj._stats_dict, fclient_obj._training_history_fname)
+    )
+    p.start()
+
+def plot_results(stats_dict, fname):
+    fig, ax1 = plt.subplots()
+    epochs = range(len(stats_dict['loss']))
+    ax1.set_xlabel('Epochs')
+    ax1.set_ylabel('Loss', color='tab:red')
+    ax1.plot(epochs, stats_dict['loss'], color='tab:red')
+    ax1.tick_params(axis='y', labelcolor='tab:red')
+    ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+    ax2.set_ylabel('Accuracy (%)', color='tab:blue')  # we already handled the x-label with ax1
+    ax2.plot(epochs, stats_dict['test_accuracy'], color='tab:blue')
+    if 'shared_test_accuracy' in stats_dict.keys():
+        ax2.plot(epochs, stats_dict['shared_test_accuracy'], color='tab:cyan')
+    ax2.tick_params(axis='y', labelcolor='tab:blue')
+    fig.tight_layout()  # otherwise the right y-label is slightly clipped
+    plt.savefig(fname)
+    plt.show()
+
 def shell_help():
     print("--------------------------- Client Shell Usage -------------------------------")
     print("server connection                    -- Shows server connection information")
     print("my ip                                -- Shows client ip")
     print("model accuracy                       -- Shows client's current model accuraccy")
     print("model loss                           -- Shows client's current model loss")
-    print("reset model                          -- Resets the clients model")
+    print("training history                     -- Generates and saves a chart with training history")
     print("quit                                 -- Terminates the client program")
 
 def client_shell(fclient_obj):
@@ -126,8 +153,8 @@ def client_shell(fclient_obj):
             show_model_accuracy(fclient_obj)
         elif input_cmd == 'model loss':
             show_model_loss(fclient_obj)
-        elif input_cmd == 'reset model':
-            reset_model(fclient_obj)
+        elif input_cmd == 'training history':
+            plot_training_history(fclient_obj)
         elif input_cmd == 'quit':
             quit(fclient_obj)
             break

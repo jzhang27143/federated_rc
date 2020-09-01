@@ -1,3 +1,4 @@
+from collections import defaultdict
 import copy
 import importlib.machinery
 import os
@@ -13,7 +14,8 @@ from federatedrc.client_utils import (
     client_shell,
     client_train_local,
     error_handle,
-    gradient_norm
+    gradient_norm,
+    plot_results,
 )
 from federatedrc import network
 
@@ -22,6 +24,7 @@ class ClientConfig(NamedTuple):
     server_ip: str
     port: int
     model_file_name: str
+    training_history_file_name: str
     local_epochs: int
     episodes: int
     batch_size: int
@@ -37,10 +40,12 @@ class FederatedClient:
         test,
         configpath="",
         interactive=False,
-        verbose=False
+        shared_test=None,
+        verbose=False,
     ):
         self._train = train
         self._test = test
+        self._shared_test = shared_test
         self._configpath = configpath
         self._interactive = interactive
         self._verbose = verbose
@@ -48,6 +53,7 @@ class FederatedClient:
         self._model = None
         self._loss = None
         self._quit = False
+        self._stats_dict = defaultdict(list)
 
         self.configure()
         if self._interactive:
@@ -76,6 +82,7 @@ class FederatedClient:
         self._server_ip = config.server_ip
         self._port = config.port
         self._model_fname = config.model_file_name
+        self._training_history_fname = config.training_history_file_name
         self._epochs = config.local_epochs
         self._episodes = config.episodes
         self._batch_size = config.batch_size
@@ -103,6 +110,7 @@ class FederatedClient:
 
         for episode in range(self._episodes):
             self._loss, update_obj = client_train_local(self, episode)
+
             # Client declines to send trained model with minimal gradient
             l2_model_params = gradient_norm(self._model, self._base_model)
             if (l2_model_params < self._grad_threshold):
@@ -143,11 +151,14 @@ class FederatedClient:
 
         if self._verbose:
             print("Training Complete")
+        plot_results(self._stats_dict, self._training_history_fname)
 
-    def calculate_accuracy(self):
-        total = len(self._test)
+    def calculate_accuracy(self, shared_test=False):
+        test_set = self._test if not shared_test else self._shared_test
+        assert test_set
+        total = len(test_set)
         total_correct = 0
-        test_loader = torch.utils.data.DataLoader(self._test)
+        test_loader = torch.utils.data.DataLoader(test_set)
 
         for _, batch_data in enumerate(test_loader):
             image, label = batch_data
@@ -161,4 +172,8 @@ class FederatedClient:
             
         return total_correct / total * 100
 
-
+    def update_training_history(self, loss, test_acc, shared_test_acc=None):
+        self._stats_dict['loss'].append(loss)
+        self._stats_dict['test_accuracy'].append(test_acc)
+        if shared_test_acc:
+            self._stats_dict['shared_test_accuracy'].append(shared_test_acc)

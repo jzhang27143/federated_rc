@@ -4,6 +4,7 @@
 /**/*.pyc
 /**/*.pt
 /data/*
+.DS_Store
 /build
 /dist
 *.vscode
