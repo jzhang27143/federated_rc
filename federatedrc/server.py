@@ -5,15 +5,10 @@ import os
 import signal
 import socket
 import threading
-import numpy as np
-import os
-os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 import torch
-from datetime import datetime as dt
 import types
 from typing import NamedTuple
-import matplotlib.pyplot as plt
-from model_total_accuracy import test_model
+
 from federatedrc import network
 from federatedrc.server_utils import (
     aggregate_models,
@@ -51,7 +46,7 @@ class FederatedServer:
         self._verbose = verbose
         self._listen_forever = listen_forever
         self._n_clients = n_clients
-        self.stats = []
+
         self._connections = list()
         self._quit = False
         self.configure()
@@ -64,27 +59,7 @@ class FederatedServer:
         def keyboard_interrupt_handler(signal, frame):
             exit(0)
         signal.signal(signal.SIGINT, keyboard_interrupt_handler)
-    def plot_results(self):
-        fig, ax1 = plt.subplots()
-        data1 = list()
-        data2 = list()
-        data = self.stats
-        for el in data:
-            data1.append(el[0])
-            data2.append(el[1])
-        t = np.arange(1, 1+len(data1), 1)
-        color = 'tab:red'
-        ax1.set_xlabel('Episodes')
-        ax1.set_ylabel('Loss', color=color)
-        ax1.plot(t, data1, color=color)
-        ax1.tick_params(axis='y', labelcolor=color)
-        ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
-        color = 'tab:blue'
-        ax2.set_ylabel('Accuracy (%)', color=color)  # we already handled the x-label with ax1
-        ax2.plot(t, data2, color=color)
-        ax2.tick_params(axis='y', labelcolor=color)
-        fig.tight_layout()  # otherwise the right y-label is slightly clipped
-        plt.show()
+
     def configure(self):
         def select_interface(ipv4=True):
             ip_type = int(ipv4)
@@ -196,7 +171,6 @@ class FederatedServer:
 
             # Stop if all client connections drop
             if len(self._connections) == 0 or end_session:
-                #self.plot_results()
                 break
 
             aggregate_params = aggregate_models(update_objects)
@@ -209,7 +183,4 @@ class FederatedServer:
                 cur_param.data = agg_param.data
 
             broadcast_model(self) # Broadcast aggregated model
-            #self.stats.append(test_model(self._model))
-            torch.save(self._model,"{}_Episode_{}".format(dt.now(),episode))
             episode += 1
-

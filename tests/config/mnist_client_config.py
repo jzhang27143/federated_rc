@@ -3,9 +3,10 @@ import torch.optim as optim
 from federatedrc.client import ClientConfig
 
 client_config = ClientConfig(
-    server_ip = '192.168.254.19',
+    server_ip = '10.176.23.29',
     port = 8880,
-    model_file_name = 'mnist_sample_cnn_client.pt',
+    model_file_name = 'mnist_sample_cnn_client1.pt',
+    training_history_file_name = 'train_history1.png',
     local_epochs = 10,
     episodes = 1,
     batch_size = 1,

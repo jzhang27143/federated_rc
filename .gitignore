@@ -4,7 +4,4 @@
 /**/*.pyc
 /**/*.pt
 /data/*
-
 .DS_Store
-
-tests/config/mnist_client_config.py
