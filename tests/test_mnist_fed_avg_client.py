@@ -15,12 +15,18 @@ def fetch_mnist_data():
 
 def launch_federated_client(args):
     train, test = fetch_mnist_data()
+    if args.distribution:
+        int_distribution = [int(i) for i in args.distribution]
+    else:
+        int_distribution = None
+        
     fc = FederatedClient(
         train,
         test,
         configpath = args.configpath[0],
         interactive = args.interactive,
-        verbose = args.verbose
+        verbose = args.verbose,
+        distribution = int_distribution
     )
     fc.train_fed_avg()
 
@@ -39,6 +45,10 @@ if __name__ == '__main__':
     parser.add_argument(
         '--verbose', action='store_true', dest='verbose',
         help='flag to provide extra debugging outputs'
+    )
+    parser.add_argument(
+        '--distribution', nargs=10, dest='distribution', default= None,
+        help='weights for each of 10 handwritten mnist digits'
     )
     args = parser.parse_args()
     launch_federated_client(args)

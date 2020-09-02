@@ -16,10 +16,8 @@ if __name__ == '__main__':
     dataDist = data_distribution.DataDistributor(train, 10)
 
     num_samples = 500
-    skewed_class = 7
+    dist = [4, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    data = dataDist.distribute_data(dist, num_samples)
 
-    geom_data = dataDist.change_distribution("Geometric", skewed_class, num_samples)
-    norm_data = dataDist.change_distribution("Normal", skewed_class, num_samples)
-
-    plt.hist([i[1] for i in norm_data])
+    plt.hist([i[1] for i in data])
     plt.show()

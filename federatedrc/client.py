@@ -18,6 +18,7 @@ from federatedrc.client_utils import (
     plot_results,
 )
 from federatedrc import network
+from federatedrc import data_distribution
 
 
 class ClientConfig(NamedTuple):
@@ -42,6 +43,7 @@ class FederatedClient:
         interactive=False,
         shared_test=None,
         verbose=False,
+        distribution=None,
     ):
         self._train = train
         self._test = test
@@ -49,6 +51,7 @@ class FederatedClient:
         self._configpath = configpath
         self._interactive = interactive
         self._verbose = verbose
+        self._distribution = distribution
 
         self._model = None
         self._loss = None
@@ -60,7 +63,15 @@ class FederatedClient:
             self._shell = threading.Thread(target=client_shell, args=(self,))
             self._shell.setDaemon(True)
             self._shell.start()
-
+        
+        if self._distribution:
+            dataDistTrain = data_distribution.DataDistributor(self._train, 10)
+            dataDistTest = data_distribution.DataDistributor(self._train, 10)
+            ## Only take 4/5 of the data. When redistributing, cannot get the exact same number of data points back
+            ## must be smaller since we are sampling from it
+            self._train = dataDistTrain.distribute_data(self._distribution, len(self._train) * 4 / 5)
+            self._test = dataDistTest.distribute_data(self._distribution, len(self._test) * 4 / 5)
+        
         # Suppress error messages from quitting
         def keyboard_interrupt_handler(signal, frame):
             exit(0)
