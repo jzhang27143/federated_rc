@@ -17,6 +17,7 @@ class UpdateObject(NamedTuple):
     model_parameters: list
     client_sent: bool = True
     session_alive: bool = True
+    parameter_indices: bool = False
 
 
 # send and recv are not sufficient due to non-blocking socket

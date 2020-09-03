@@ -78,6 +78,29 @@ def client_train_local(fclient_obj, episode):
         model_parameters = list(model.parameters())
     )
 
+### Simon writes this, putting it here temporarily
+### Model as input, returns indices of parameters that are worth keeping
+def threshold_parameters(model):
+    nonzero = []
+    for i in range(len(list(model.parameters()))):
+        nonzero.append(torch.nonzero(list(model.parameters())[i], as_tuple=False))
+    return nonzero
+
+## Expects parameter_indices to be a list of tensors, each tensor representing a layer in the nn
+def convert_parameters(model, parameter_indices):
+    parameters = list(model.parameters())
+    index_representation = []
+    for i in range(len(parameter_indices)):
+        layer_representation = []
+        indices_list = parameter_indices[i].tolist()
+        for index in indices_list:
+            value = []
+            value.append(parameters[i][tuple(index)].tolist())
+            value.append(index)
+            layer_representation.append(value)
+        index_representation.append(layer_representation)
+    return index_representation
+
 def show_connection(fclient_obj):
     print("Server IP Address: {}, Server Port: {}".format(
             fclient_obj._server_ip, fclient_obj._port))
@@ -161,3 +184,7 @@ def client_shell(fclient_obj):
         else:
             shell_help()
     exit(0)
+
+model = torch.load('mnist_sample_cnn_client.pt')
+params = threshold_parameters(model)
+print(convert_parameters(model, params))
