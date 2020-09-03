@@ -138,7 +138,7 @@ class FederatedClient:
             )
             torch.save(index_update_object, index_update_fname)
 
-            if os.path.getsize(index_update_fname) != os.path.getsize(tmp_fname):
+            if os.path.getsize(index_update_fname) < os.path.getsize(tmp_fname):
                 if self._verbose:
                     print('Sending indices of model updates')
                 error_handle(
