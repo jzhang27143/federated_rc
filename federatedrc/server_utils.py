@@ -3,6 +3,7 @@ import errno
 import threading
 import torch
 import socket
+import copy
 
 from federatedrc import network
 
@@ -52,6 +53,14 @@ def broadcast_model(fserver_obj):
             ),
             conn_obj
         )
+
+def build_params(model, parameter_indices):
+    blank_model = copy.deepcopy(model)
+    blank_params = list(blank_model.parameters())
+    for i in range(len(blank_params)):
+        for index in parameter_indices[i]:
+            blank_params[i][tuple(index[1])] = index[0]
+    return blank_params
 
 def aggregate_models(update_objects):
     n_tensors = len(update_objects[0].model_parameters)

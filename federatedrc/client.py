@@ -16,6 +16,8 @@ from federatedrc.client_utils import (
     error_handle,
     gradient_norm,
     plot_results,
+    threshold_parameters,
+    convert_parameters,
 )
 from federatedrc import network
 
@@ -125,9 +127,27 @@ class FederatedClient:
                 )
 
             torch.save(update_obj, tmp_fname)
-            error_handle(
-                self, network.send_model_file(tmp_fname, self._socket)
+            # Client chooses to send indices of model updates
+            index_update_fname = 'index_update.pt'
+            params = threshold_parameters(self._model)
+            update_indices = convert_parameters(self._model, params)
+            index_update_object = network.UpdateObject(
+                n_samples = update_obj.n_samples,
+                model_parameters = update_indices,
+                parameter_indices = True
             )
+            torch.save(index_update_object, index_update_fname)
+
+            if os.path.getsize(index_update_fname) != os.path.getsize(tmp_fname):
+                if self._verbose:
+                    print('Sending indices of model updates')
+                error_handle(
+                    self, network.send_model_file(index_update_fname, self._socket)
+                )
+            else:
+                error_handle(
+                    self, network.send_model_file(tmp_fname, self._socket)
+                )
             
             if self._verbose:
                 print('Update Object Sent')
@@ -177,26 +197,3 @@ class FederatedClient:
         self._stats_dict['test_accuracy'].append(test_acc)
         if shared_test_acc:
             self._stats_dict['shared_test_accuracy'].append(shared_test_acc)
-
-### Simon writes this, putting it here temporarily
-### Model as input, returns indices of parameters that are worth keeping
-def threshold_parameters(model):
-    nonzero = []
-    for i in range(len(list(model.parameters()))):
-        nonzero.append(torch.nonzero(list(model.parameters())[i], as_tuple=False))
-    return nonzero
-
-## Expects parameter_indices to be a list of tensors, each tensor representing a layer in the nn
-def convert_parameters(model, parameter_indices):
-    parameters = list(model.parameters())
-    index_representation = []
-    for i in range(len(parameter_indices)):
-        layer_representation = []
-        indices_list = parameter_indices[i].tolist()
-        for index in indices_list:
-            value = []
-            value.append(parameters[i][tuple(index)].tolist())
-            value.append(index)
-            layer_representation.append(value)
-        index_representation.append(layer_representation)
-    return index_representation

@@ -184,7 +184,3 @@ def client_shell(fclient_obj):
         else:
             shell_help()
     exit(0)
-
-model = torch.load('mnist_sample_cnn_client.pt')
-params = threshold_parameters(model)
-print(convert_parameters(model, params))
