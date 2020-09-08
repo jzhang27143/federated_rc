@@ -60,7 +60,7 @@ class FederatedClient:
             self._shell = threading.Thread(target=client_shell, args=(self,))
             self._shell.setDaemon(True)
             self._shell.start()
-
+        
         # Suppress error messages from quitting
         def keyboard_interrupt_handler(signal, frame):
             exit(0)
