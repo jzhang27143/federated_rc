@@ -1,16 +1,12 @@
+from collections import defaultdict
 import random
 
 ## Assumes data is not a tensor
 class DataDistributor:
     def __init__(self, data, num_classes):
         self.classes = num_classes
-        self.buckets = []
-        self.init_buckets()
+        self.buckets = defaultdict(list)
         self.assign_data(data)
-
-    def init_buckets(self):
-        for _ in range(self.classes):
-            self.buckets.append([])
 
     def assign_data(self, data):
         for elem in data:
