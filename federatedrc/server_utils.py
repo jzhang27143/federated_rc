@@ -83,17 +83,24 @@ def show_connections(fserver_obj):
             )
         )
 
+
+
 def plot_rx(fserver_obj, fname):
-    rx_data = fserver_obj.rx_data
-    fig, ax1 = plt.subplots()
-    epochs = range(len(rx_data))
-    ax1.set_xlabel('Epochs')
-    ax1.set_ylabel('Server RX (Bytes)', color='tab:red')
-    ax1.plot(epochs, rx_data, color='tab:red')
-    ax1.tick_params(axis='y', labelcolor='tab:red')
-    fig.tight_layout()  # otherwise the right y-label is slightly clipped
-    plt.savefig(fname)
-    plt.show()
+    p = multiprocessing.Process(
+        target=plot_results, 
+        args=(fclient_obj.rx_data, plot_rx_thread)
+    )
+    p.start()
+    def plot_rx_thread(rx_data,fname):
+        fig, ax1 = plt.subplots()
+        epochs = range(len(rx_data))
+        ax1.set_xlabel('Epochs')
+        ax1.set_ylabel('Server RX (Bytes)', color='tab:red')
+        ax1.plot(epochs, rx_data, color='tab:red')
+        ax1.tick_params(axis='y', labelcolor='tab:red')
+        fig.tight_layout()  # otherwise the right y-label is slightly clipped
+        plt.savefig(fname)
+        plt.show()
 
 def show_next_port(fserver_obj):
     print("Next Available Client Port: {}".format(fserver_obj._port))
