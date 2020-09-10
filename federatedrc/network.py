@@ -5,7 +5,7 @@ import select
 import socket
 import torch.nn as nn
 from typing import NamedTuple
-
+from math import ceil
 
 class InitialObject(NamedTuple):
     grad_threshold: float
@@ -52,7 +52,7 @@ def send_model_file(filename, socket_conn, buffer_size=1024):
         err = _send_buffer(socket_conn, send_buffer, buffer_size)
         send_buffer = model_serial.read(buffer_size)
     model_serial.close()
-    return err, fsize_msg
+    return err, (1+ceil(fsize_msg/buffer_size))*buffer_size
 
 def _receive_buffer(socket_conn, buffer_size):
     bytes_received = 0
