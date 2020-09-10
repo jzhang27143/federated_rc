@@ -120,12 +120,16 @@ def plot_results(stats_dict, fname):
     if 'shared_test_accuracy' in stats_dict.keys():
         ax2.plot(epochs, stats_dict['shared_test_accuracy'], color='tab:cyan')
     ax2.tick_params(axis='y', labelcolor='tab:blue')
+    ax3 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+    ax3.set_ylabel('Transmission Bandwidth (Bytes)', color='tab:green')  # we already handled the x-label with ax1
+    ax3.plot(epochs, stats_dict['tx_data'], color='tab:green')
+    ax3.tick_params(axis='y', labelcolor='tab:green')
     fig.tight_layout()  # otherwise the right y-label is slightly clipped
     plt.savefig(fname)
     plt.show()
 
 def plot_tx(fclient_obj, fname="transmission_chart.png"):
-    tx_data = fclient_obj.tx_data
+    tx_data = fclient_obj.stats_dict['tx_data']
     fig, ax1 = plt.subplots()
     Episodes = range(len(tx_data))
     ax1.set_xlabel('Episodes')
