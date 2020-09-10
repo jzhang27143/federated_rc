@@ -52,7 +52,7 @@ def send_model_file(filename, socket_conn, buffer_size=1024):
         err = _send_buffer(socket_conn, send_buffer, buffer_size)
         send_buffer = model_serial.read(buffer_size)
     model_serial.close()
-    return err
+    return err, fsize_msg
 
 def _receive_buffer(socket_conn, buffer_size):
     bytes_received = 0

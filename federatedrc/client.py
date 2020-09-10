@@ -55,6 +55,8 @@ class FederatedClient:
         self._quit = False
         self._stats_dict = defaultdict(list)
 
+        self.tx_data = list()
+        self.tx_count = 0
         self.configure()
         if self._interactive:
             self._shell = threading.Thread(target=client_shell, args=(self,))
@@ -125,10 +127,10 @@ class FederatedClient:
                 )
 
             torch.save(update_obj, tmp_fname)
-            error_handle(
-                self, network.send_model_file(tmp_fname, self._socket)
-            )
-            
+            err, tx_bytes = network.send_model_file(tmp_fname, self._socket)
+            error_handle(self, err)
+            self.tx_count += tx_bytes
+            self.tx_data.append(tx_count)
             if self._verbose:
                 print('Update Object Sent')
 
@@ -147,7 +149,8 @@ class FederatedClient:
             session_alive = False
         )
         torch.save(update_obj, tmp_fname)
-        error_handle(self, network.send_model_file(tmp_fname, self._socket))
+        err, tx_bytes = network.send_model_file(tmp_fname, self._socket)
+        error_handle(self, err)
 
         if self._verbose:
             print("Training Complete")
