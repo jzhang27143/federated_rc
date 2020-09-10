@@ -146,7 +146,7 @@ class FederatedServer:
             # Receive client updates
             update_objects = list()
             end_session = False
-            self.rx_data.append(rx_count)   
+            self.rx_data.append(self.rx_count)   
             for idx, conn_obj in enumerate(self._connections[:]):
                 err, bytes_received = network.receive_model_file(
                     tmp_fname, conn_obj[0]

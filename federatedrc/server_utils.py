@@ -3,7 +3,7 @@ import errno
 import threading
 import torch
 import socket
-
+import matplotlib.pyplot as plt
 from federatedrc import network
 
 def error_handle(fserver_obj, err, conn_obj):
@@ -88,7 +88,7 @@ def plot_rx(fserver_obj, fname):
     fig, ax1 = plt.subplots()
     epochs = range(len(rx_data))
     ax1.set_xlabel('Epochs')
-    ax1.set_ylabel('Server RX Bytes', color='tab:red')
+    ax1.set_ylabel('Server RX (Bytes)', color='tab:red')
     ax1.plot(epochs, rx_data, color='tab:red')
     ax1.tick_params(axis='y', labelcolor='tab:red')
     fig.tight_layout()  # otherwise the right y-label is slightly clipped
@@ -120,6 +120,7 @@ def shell_help():
     print("next port                 -- Shows port number for the next client connection")
     print("server ip                 -- Shows server's binded IP address")
     print("start federated averaging -- Starts federated averaging with connected clients")
+    print("plot rx bytes             -- Plots network data for received update objects")
     print("reset model               -- Resets server model to restart federated scheme")
     print("quit                      -- Closes sockets and exits shell")
 
@@ -130,7 +131,6 @@ def server_shell(fserver_obj):
         except EOFError:
             quit(fserver_obj)
             break
-
         if input_cmd == '':
             continue
         elif input_cmd == 'connections':
