@@ -54,7 +54,8 @@ class FederatedServer:
             self._shell = threading.Thread(target=server_shell, args=(self,))
             self._shell.setDaemon(True)
             self._shell.start()
-
+        self.rx_data = list()
+        self.rx_count = 0
         # Suppress error messages from quitting
         def keyboard_interrupt_handler(signal, frame):
             exit(0)
@@ -145,10 +146,12 @@ class FederatedServer:
             # Receive client updates
             update_objects = list()
             end_session = False
+            self.rx_data.append(rx_count)   
             for idx, conn_obj in enumerate(self._connections[:]):
                 err, bytes_received = network.receive_model_file(
                     tmp_fname, conn_obj[0]
                 )
+                self.rx_count+=bytes_received
                 if err:
                     error_handle(self, err, conn_obj)
                     if self._verbose:
