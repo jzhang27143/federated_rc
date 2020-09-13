@@ -120,21 +120,24 @@ def plot_results(stats_dict, fname):
     if 'shared_test_accuracy' in stats_dict.keys():
         ax2.plot(epochs, stats_dict['shared_test_accuracy'], color='tab:cyan')
     ax2.tick_params(axis='y', labelcolor='tab:blue')
-    ax3 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
-    ax3.set_ylabel('Transmission Bandwidth (Bytes)', color='tab:green')  # we already handled the x-label with ax1
-    ax3.plot(epochs, stats_dict['tx_data'], color='tab:green')
-    ax3.tick_params(axis='y', labelcolor='tab:green')
     fig.tight_layout()  # otherwise the right y-label is slightly clipped
     plt.savefig(fname)
     plt.show()
 
-def plot_tx(fclient_obj, fname="transmission_chart.png"):
-    tx_data = fclient_obj.stats_dict['tx_data']
+def plot_tx_history(fclient_obj):
+    p = multiprocessing.Process(
+        target=plot_tx, 
+        args=(fclient_obj._stats_dict, fclient_obj._tx_history_fname)
+    )
+    p.start()
+
+def plot_tx(stats_dict, fname):
+    tx_data = stats_dict['tx_data']
     fig, ax1 = plt.subplots()
-    Episodes = range(len(tx_data))
+    episodes = range(len(tx_data))
     ax1.set_xlabel('Episodes')
     ax1.set_ylabel('Client TX (Bytes)', color='tab:blue')
-    ax1.plot(Episodes, tx_data, color='tab:blue')
+    ax1.plot(episodes, tx_data, color='tab:blue')
     ax1.tick_params(axis='y', labelcolor='tab:blue')
     fig.tight_layout()  # otherwise the right y-label is slightly clipped
     plt.savefig(fname)
@@ -147,7 +150,7 @@ def shell_help():
     print("model accuracy                       -- Shows client's current model accuraccy")
     print("model loss                           -- Shows client's current model loss")
     print("training history                     -- Generates and saves a chart with training history")
-    print("transmission usage                   -- Generates and saves a chart with bandwidth usage")
+    print("transmission history                 -- Generates and saves a chart with bandwidth usage")
     print("quit                                 -- Terminates the client program")
 
 def client_shell(fclient_obj):
@@ -172,8 +175,8 @@ def client_shell(fclient_obj):
             show_model_loss(fclient_obj)
         elif input_cmd == 'training history':
             plot_training_history(fclient_obj)
-        elif input_cmd == 'transmission usage':
-            plot_tx(fclient_obj)
+        elif input_cmd == 'transmission history':
+            plot_tx_history(fclient_obj)
         elif input_cmd == 'quit':
             quit(fclient_obj)
             break

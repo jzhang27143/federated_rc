@@ -151,13 +151,13 @@ class FederatedServer:
                 err, bytes_received = network.receive_model_file(
                     tmp_fname, conn_obj[0]
                 )
-                self.rx_count+=bytes_received
                 if err:
                     error_handle(self, err, conn_obj)
                     if self._verbose:
                         print('Dropped Connection from Client {}'.format(idx))
                 else:
                     # Aggregation stops when all clients send 0 bytes
+                    self.rx_count += bytes_received
                     update_obj = torch.load(tmp_fname)
                     end_session = True if not update_obj.session_alive \
                         else end_session

@@ -32,26 +32,18 @@ def broadcast_initial_model(fserver_obj):
     )
     torch.save(initial_object, fserver_obj._model_fname)
     for conn_obj in fserver_obj._connections[:]:
-        error_handle(
-            fserver_obj,
-            network.send_model_file(
-                fserver_obj._model_fname,
-                conn_obj[0]
-            ),
-            conn_obj
+        err, _ = network.send_model_file(
+            fserver_obj._model_fname, conn_obj[0]
         )
+        error_handle(fserver_obj, err, conn_obj)
 
 def broadcast_model(fserver_obj):
     torch.save(fserver_obj._model, fserver_obj._model_fname)
     for conn_obj in fserver_obj._connections[:]:
-        error_handle(
-            fserver_obj,
-            network.send_model_file(
-                fserver_obj._model_fname,
-                conn_obj[0]
-            ),
-            conn_obj
+        err, _ = network.send_model_file(
+            fserver_obj._model_fname, conn_obj[0]
         )
+        error_handle(fserver_obj, err, conn_obj)
 
 def aggregate_models(update_objects):
     n_tensors = len(update_objects[0].model_parameters)
@@ -77,13 +69,10 @@ def aggregate_models(update_objects):
 def show_connections(fserver_obj):
     for conn, addr, server_port in fserver_obj._connections:
         client_name = socket.gethostbyaddr(addr[0])[0]
-        print("Client Name: {}, IP Address: {}, Server Port: {},",
-            "Client Port: {}".format(
+        print("Client Name: {}, IP Address: {}, Server Port: {}, Client Port: {}".format(
                 client_name, addr[0], server_port, addr[1]
             )
         )
-
-
 
 def plot_rx(fserver_obj, fname):
     p = multiprocessing.Process(
