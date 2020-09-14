@@ -15,7 +15,8 @@ from federatedrc.client_utils import (
     client_train_local,
     error_handle,
     gradient_norm,
-    plot_results,
+    plot_training_history,
+    plot_tx_history,
 )
 from federatedrc import network
 
@@ -25,6 +26,7 @@ class ClientConfig(NamedTuple):
     port: int
     model_file_name: str
     training_history_file_name: str
+    tx_history_file_name: str
     local_epochs: int
     episodes: int
     batch_size: int
@@ -54,6 +56,7 @@ class FederatedClient:
         self._loss = None
         self._quit = False
         self._stats_dict = defaultdict(list)
+        self._tx_bytes = 0
 
         self.configure()
         if self._interactive:
@@ -83,6 +86,7 @@ class FederatedClient:
         self._port = config.port
         self._model_fname = config.model_file_name
         self._training_history_fname = config.training_history_file_name
+        self._tx_history_fname = config.tx_history_file_name
         self._epochs = config.local_epochs
         self._episodes = config.episodes
         self._batch_size = config.batch_size
@@ -96,7 +100,7 @@ class FederatedClient:
         s.setblocking(0)
         self._socket = s
 
-    def train_fed_avg(self, tmp_fname='tmp_client.pt'):
+    def train_fed_avg(self):
         # Initial server model
         err, _ = network.receive_model_file(self._model_fname, self._socket)
         error_handle(self, err)
@@ -108,6 +112,7 @@ class FederatedClient:
         if self._verbose:
             print('Received Initial Model')
 
+        tmp_fname = 'tmp_' + self._model_fname
         for episode in range(self._episodes):
             self._loss, update_obj = client_train_local(self, episode)
 
@@ -125,10 +130,10 @@ class FederatedClient:
                 )
 
             torch.save(update_obj, tmp_fname)
-            error_handle(
-                self, network.send_model_file(tmp_fname, self._socket)
-            )
-            
+            err, tx_bytes = network.send_model_file(tmp_fname, self._socket)
+            error_handle(self, err)
+            self._tx_bytes += tx_bytes
+            self._stats_dict['tx_data'].append(self._tx_bytes)
             if self._verbose:
                 print('Update Object Sent')
 
@@ -147,11 +152,13 @@ class FederatedClient:
             session_alive = False
         )
         torch.save(update_obj, tmp_fname)
-        error_handle(self, network.send_model_file(tmp_fname, self._socket))
+        err, tx_bytes = network.send_model_file(tmp_fname, self._socket)
+        error_handle(self, err)
 
         if self._verbose:
             print("Training Complete")
-        plot_results(self._stats_dict, self._training_history_fname)
+        plot_training_history(self)
+        plot_tx_history(self)
 
     def calculate_accuracy(self, shared_test=False):
         test_set = self._test if not shared_test else self._shared_test
