@@ -100,7 +100,7 @@ class FederatedClient:
         s.setblocking(0)
         self._socket = s
 
-    def train_fed_avg(self, tmp_fname='tmp_client.pt'):
+    def train_fed_avg(self):
         # Initial server model
         err, _ = network.receive_model_file(self._model_fname, self._socket)
         error_handle(self, err)
@@ -112,6 +112,7 @@ class FederatedClient:
         if self._verbose:
             print('Received Initial Model')
 
+        tmp_fname = 'tmp_' + self._model_fname
         for episode in range(self._episodes):
             self._loss, update_obj = client_train_local(self, episode)
 

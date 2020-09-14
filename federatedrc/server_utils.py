@@ -1,10 +1,18 @@
 import _thread
 import errno
+import matplotlib.pyplot as plt
+import multiprocessing
 import threading
 import torch
 import socket
-import matplotlib.pyplot as plt
+
 from federatedrc import network
+
+def receive_update(tmp_fname, conn_obj):
+    err, bytes_received = network.receive_model_file(
+        tmp_fname, conn_obj[0]
+    )
+    return err, bytes_received
 
 def error_handle(fserver_obj, err, conn_obj):
     if err == 0:
@@ -74,22 +82,23 @@ def show_connections(fserver_obj):
             )
         )
 
-def plot_rx(fserver_obj, fname):
+def plot_rx_history(fserver_obj):
     p = multiprocessing.Process(
-        target=plot_results, 
-        args=(fclient_obj.rx_data, plot_rx_thread)
+        target=plot_rx,
+        args=(fserver_obj.rx_data, fserver_obj._rx_history_fname)
     )
     p.start()
-    def plot_rx_thread(rx_data,fname):
-        fig, ax1 = plt.subplots()
-        epochs = range(len(rx_data))
-        ax1.set_xlabel('Epochs')
-        ax1.set_ylabel('Server RX (Bytes)', color='tab:red')
-        ax1.plot(epochs, rx_data, color='tab:red')
-        ax1.tick_params(axis='y', labelcolor='tab:red')
-        fig.tight_layout()  # otherwise the right y-label is slightly clipped
-        plt.savefig(fname)
-        plt.show()
+
+def plot_rx(rx_data, fname):
+    fig, ax1 = plt.subplots()
+    epochs = range(len(rx_data))
+    ax1.set_xlabel('Epochs')
+    ax1.set_ylabel('Server RX (Bytes)', color='tab:red')
+    ax1.plot(epochs, rx_data, color='tab:red')
+    ax1.tick_params(axis='y', labelcolor='tab:red')
+    fig.tight_layout()  # otherwise the right y-label is slightly clipped
+    plt.savefig(fname)
+    plt.show()
 
 def show_next_port(fserver_obj):
     print("Next Available Client Port: {}".format(fserver_obj._port))
@@ -116,7 +125,7 @@ def shell_help():
     print("next port                 -- Shows port number for the next client connection")
     print("server ip                 -- Shows server's binded IP address")
     print("start federated averaging -- Starts federated averaging with connected clients")
-    print("plot rx bytes             -- Plots network data for received update objects")
+    print("bandwidth history         -- Plots network data for received update objects")
     print("reset model               -- Resets server model to restart federated scheme")
     print("quit                      -- Closes sockets and exits shell")
 
@@ -142,8 +151,8 @@ def server_shell(fserver_obj):
             )
             fed_avg.setDaemon(True)
             fed_avg.start()
-        elif input_cmd == "plot rx":
-            plot_rx(fserver_obj, "server_plot.png")
+        elif input_cmd == "bandwidth history":
+            plot_rx_history(fserver_obj)
         elif input_cmd == 'reset model':
             reset_model(fserver_obj)
         elif input_cmd == 'quit':
