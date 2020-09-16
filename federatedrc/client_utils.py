@@ -91,6 +91,9 @@ def convert_parameters(model, parameter_indices):
     parameters = list(model.parameters())
     index_representation = []
     for i in range(len(parameter_indices)):
+        if not parameter_indices[i].tolist():
+            index_representation.append([])
+            continue
         layer_representation = []
         indices_list = parameter_indices[i].tolist()
         for index in indices_list:
