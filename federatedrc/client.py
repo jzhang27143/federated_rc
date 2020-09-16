@@ -15,6 +15,7 @@ from federatedrc.client_utils import (
     client_train_local,
     error_handle,
     gradient_norm,
+    parameter_threshold,
     plot_training_history,
     plot_tx_history,
 )
@@ -33,6 +34,7 @@ class ClientConfig(NamedTuple):
     criterion: torch.nn.Module
     optimizer: torch.optim.Optimizer
     optimizer_kwargs: dict
+    parameter_threshold: int
 
 
 class FederatedClient:
@@ -93,6 +95,7 @@ class FederatedClient:
         self._criterion = config.criterion
         self._optim_class = config.optimizer
         self._optim_kwargs = config.optimizer_kwargs
+        self._parameter_threshold = config.parameter_threshold
 
     def connect_to_server(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -128,6 +131,8 @@ class FederatedClient:
                     model_parameters = list(), 
                     client_sent = False
                 )
+
+            parameter_threshold(update_obj, self._parameter_threshold)
 
             torch.save(update_obj, tmp_fname)
             err, tx_bytes = network.send_model_file(tmp_fname, self._socket)
@@ -176,7 +181,7 @@ class FederatedClient:
             maxindex = np.argmax(preds)
             if maxindex == ans:
                 total_correct += 1
-            
+
         return total_correct / total * 100
 
     def update_training_history(self, loss, test_acc, shared_test_acc=None):

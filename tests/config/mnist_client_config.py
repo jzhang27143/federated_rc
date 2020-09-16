@@ -16,5 +16,6 @@ client_config = ClientConfig(
     optimizer_kwargs = {
         'lr': 0.001,
         'momentum': 0.9
-    }
+    },
+    parameter_threshold = 1e-4
 )
