@@ -29,6 +29,7 @@ class ClientConfig(NamedTuple):
     tx_history_file_name: str
     local_epochs: int
     episodes: int
+    episode_train_size: int
     batch_size: int
     criterion: torch.nn.Module
     optimizer: torch.optim.Optimizer
@@ -89,6 +90,7 @@ class FederatedClient:
         self._tx_history_fname = config.tx_history_file_name
         self._epochs = config.local_epochs
         self._episodes = config.episodes
+        self._episode_train_size = config.episode_train_size
         self._batch_size = config.batch_size
         self._criterion = config.criterion
         self._optim_class = config.optimizer

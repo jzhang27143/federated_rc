@@ -10,6 +10,7 @@ client_config = ClientConfig(
     tx_history_file_name = 'tx_history1.png',
     local_epochs = 5,
     episodes = 10,
+    episode_train_size = 1000,
     batch_size = 1,
     criterion = nn.CrossEntropyLoss(),
     optimizer = optim.SGD,

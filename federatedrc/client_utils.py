@@ -33,8 +33,9 @@ def error_handle(fclient_obj, err):
         exit(0)
 
 def client_train_local(fclient_obj, episode):
+    rand_sampler = torch.utils.data.RandomSampler(fclient_obj._train, True, fclient_obj._episode_train_size)
     train_loader = torch.utils.data.DataLoader(
-        fclient_obj._train, batch_size=fclient_obj._batch_size, shuffle=True
+        fclient_obj._train, batch_size=fclient_obj._batch_size, shuffle=False, sampler=rand_sampler
     )
     epochs = fclient_obj._epochs
     model = fclient_obj._model
@@ -74,7 +75,7 @@ def client_train_local(fclient_obj, episode):
             print('Epoch {} Loss: {}'.format(epoch, running_loss))
 
     return running_loss, network.UpdateObject(
-        n_samples = len(fclient_obj._train),
+        n_samples = fclient_obj._episode_train_size,
         model_parameters = list(model.parameters())
     )
 
