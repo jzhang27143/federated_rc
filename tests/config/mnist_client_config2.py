@@ -7,13 +7,15 @@ client_config = ClientConfig(
     port = 8881,
     model_file_name = 'mnist_sample_cnn_client2.pt',
     training_history_file_name = 'train_history2.png',
-    local_epochs = 10,
-    episodes = 1,
+    tx_history_file_name = 'tx_history2.png',
+    local_epochs = 5,
+    episodes = 10,
     batch_size = 1,
     criterion = nn.CrossEntropyLoss(),
     optimizer = optim.SGD,
     optimizer_kwargs = {
         'lr': 0.001,
         'momentum': 0.9
-    }
+    },
+    parameter_threshold = 1e-4
 )

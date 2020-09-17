@@ -1,6 +1,7 @@
 import errno
 import ifaddr
 import importlib.machinery
+from multiprocessing import Pool
 import os
 import signal
 import socket
@@ -15,6 +16,8 @@ from federatedrc.server_utils import (
     broadcast_initial_model,
     broadcast_model,
     error_handle,
+    plot_rx_history,
+    receive_update,
     server_shell
 )
 
@@ -23,6 +26,7 @@ class ServerConfig(NamedTuple):
     wlan_ip: str
     port: int
     model_file_name: str
+    rx_history_file_name: str
     grad_threshold: float = 0.0
 
 
@@ -54,7 +58,8 @@ class FederatedServer:
             self._shell = threading.Thread(target=server_shell, args=(self,))
             self._shell.setDaemon(True)
             self._shell.start()
-
+        self.rx_data = list()
+        self.rx_count = 0
         # Suppress error messages from quitting
         def keyboard_interrupt_handler(signal, frame):
             exit(0)
@@ -100,6 +105,7 @@ class FederatedServer:
         self._auto_port = (port_config == 'auto-discover')
         self._port = 0 if self._auto_port else int(port_config)
         self._model_fname = config.model_file_name
+        self._rx_history_fname = config.rx_history_file_name
         self._grad_threshold = config.grad_threshold
 
     def run(self):
@@ -107,7 +113,7 @@ class FederatedServer:
         while self._listen_forever or n_clients < self._n_clients:
             try:
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                s.setblocking(0)
+                s.setblocking(False)
                 s.bind((self._wlan_ip, self._port))
                 if self._auto_port: # update _port for auto-discover
                     self._port = s.getsockname()[1]
@@ -134,7 +140,7 @@ class FederatedServer:
 
     def start_federated_averaging(self):
         episode = 0
-        tmp_fname = 'tmp_server.pt'
+        tmp_fname = 'tmp_server{}.pt'
         broadcast_initial_model(self)   # Initialize client models
 
         while True:
@@ -145,17 +151,30 @@ class FederatedServer:
             # Receive client updates
             update_objects = list()
             end_session = False
-            for idx, conn_obj in enumerate(self._connections[:]):
-                err, bytes_received = network.receive_model_file(
-                    tmp_fname, conn_obj[0]
-                )
+            self.rx_data.append(self.rx_count)
+
+            pool = Pool(len(self._connections))
+            responses = pool.starmap(
+                receive_update,
+                [(tmp_fname.format(idx), conn_obj)
+                for idx, conn_obj in enumerate(self._connections[:])]
+            )
+            pool.close()
+
+            for idx, response in enumerate(responses):
+                err, bytes_received = response[0], response[1]
+                try:
+                    conn_obj = self._connections[idx]
+                except IndexError:
+                    break
                 if err:
                     error_handle(self, err, conn_obj)
                     if self._verbose:
                         print('Dropped Connection from Client {}'.format(idx))
                 else:
                     # Aggregation stops when all clients send 0 bytes
-                    update_obj = torch.load(tmp_fname)
+                    self.rx_count += bytes_received
+                    update_obj = torch.load(tmp_fname.format(idx))
                     end_session = True if not update_obj.session_alive \
                         else end_session
 
@@ -184,3 +203,5 @@ class FederatedServer:
 
             broadcast_model(self) # Broadcast aggregated model
             episode += 1
+
+        plot_rx_history(self)
