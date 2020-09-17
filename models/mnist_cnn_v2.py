@@ -7,9 +7,9 @@ https://www.kaggle.com/cdeotte/25-million-images-0-99757-mnist
 Achieves 95% accuracy on this system.'''
 
 
-class MNIST_CNN_V2(nn.Module):
+class Net(nn.Module):
     def __init__(self):
-        super(MNIST_CNN_V2, self).__init__()
+        super(Net, self).__init__()
         self.dropout_layer = nn.Dropout2d(0.4)
 
         self.conv1 = nn.Conv2d(1, 32, 3)

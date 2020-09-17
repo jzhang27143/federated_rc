@@ -7,9 +7,9 @@ https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html
 Achieves 92% accuracy on this system.'''
 
 
-class MNIST_CNN_V1(nn.Module):
+class Net(nn.Module):
     def __init__(self, dropout=False, kernel_size=5):
-        super(MNIST_CNN_V1, self).__init__()
+        super(Net, self).__init__()
         self.dropout = dropout
         if dropout:
             self.drop_layer = nn.Dropout2d(p=0.3)
