@@ -3,24 +3,34 @@ import torch
 from torchvision import transforms, datasets
 
 from federatedrc.client import FederatedClient
+from federatedrc.data_distribution import DataDistributor
+
 
 def fetch_mnist_data():
     tensor_transform = transforms.Compose([transforms.ToTensor()])
     full_train = datasets.MNIST(root='./data', train=True, download=True, transform=tensor_transform)
     full_test = datasets.MNIST(root='./data', train=False, download=True, transform=tensor_transform)
-
-    train = torch.utils.data.Subset(full_train, range(0, 2000))
-    test = torch.utils.data.Subset(full_test, range(2000, 2500)) 
-    return train, test
+    return full_train, full_test
 
 def launch_federated_client(args):
-    train, test = fetch_mnist_data()
+    full_train, full_test = fetch_mnist_data()
+    if args.distribution:
+        int_distribution = [int(i) for i in args.distribution]
+    # distribute data uniformly if unspecified
+    else:
+        int_distribution = [1 for _ in range(10)]
+
+    train_distributor = DataDistributor(full_train, 10)
+    test_distributor = DataDistributor(full_test, 10)
+    train = train_distributor.distribute_data(int_distribution, args.n_train)
+    test = test_distributor.distribute_data(int_distribution, args.n_test)
+
     fc = FederatedClient(
         train,
         test,
         configpath = args.configpath[0],
         interactive = args.interactive,
-        verbose = args.verbose
+        verbose = args.verbose,
     )
     fc.train_fed_avg()
 
@@ -39,6 +49,18 @@ if __name__ == '__main__':
     parser.add_argument(
         '--verbose', action='store_true', dest='verbose',
         help='flag to provide extra debugging outputs'
+    )
+    parser.add_argument(
+        '--distribution', nargs=10, dest='distribution', default= None,
+        metavar='#', help='weights for each of 10 handwritten mnist digits'
+    )
+    parser.add_argument(
+        '--n_train', nargs=1, dest='n_train', default=3000,
+        help='number of images to use in training'
+    )
+    parser.add_argument(
+        '--n_test', nargs=1, dest='n_test', default=800,
+        help='number of images to use for testing'
     )
     args = parser.parse_args()
     launch_federated_client(args)

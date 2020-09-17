@@ -1,11 +1,19 @@
 import _thread
 import errno
+import matplotlib.pyplot as plt
+import multiprocessing
 import threading
 import torch
 import socket
 import copy
 
 from federatedrc import network
+
+def receive_update(tmp_fname, conn_obj):
+    err, bytes_received = network.receive_model_file(
+        tmp_fname, conn_obj[0]
+    )
+    return err, bytes_received
 
 def error_handle(fserver_obj, err, conn_obj):
     if err == 0:
@@ -33,26 +41,18 @@ def broadcast_initial_model(fserver_obj):
     )
     torch.save(initial_object, fserver_obj._model_fname)
     for conn_obj in fserver_obj._connections[:]:
-        error_handle(
-            fserver_obj,
-            network.send_model_file(
-                fserver_obj._model_fname,
-                conn_obj[0]
-            ),
-            conn_obj
+        err, _ = network.send_model_file(
+            fserver_obj._model_fname, conn_obj[0]
         )
+        error_handle(fserver_obj, err, conn_obj)
 
 def broadcast_model(fserver_obj):
     torch.save(fserver_obj._model, fserver_obj._model_fname)
     for conn_obj in fserver_obj._connections[:]:
-        error_handle(
-            fserver_obj,
-            network.send_model_file(
-                fserver_obj._model_fname,
-                conn_obj[0]
-            ),
-            conn_obj
+        err, _ = network.send_model_file(
+            fserver_obj._model_fname, conn_obj[0]
         )
+        error_handle(fserver_obj, err, conn_obj)
 
 def build_params(model, parameter_indices):
     blank_model = copy.deepcopy(model)
@@ -86,11 +86,28 @@ def aggregate_models(update_objects):
 def show_connections(fserver_obj):
     for conn, addr, server_port in fserver_obj._connections:
         client_name = socket.gethostbyaddr(addr[0])[0]
-        print("Client Name: {}, IP Address: {}, Server Port: {},",
-            "Client Port: {}".format(
+        print("Client Name: {}, IP Address: {}, Server Port: {}, Client Port: {}".format(
                 client_name, addr[0], server_port, addr[1]
             )
         )
+
+def plot_rx_history(fserver_obj):
+    p = multiprocessing.Process(
+        target=plot_rx,
+        args=(fserver_obj.rx_data, fserver_obj._rx_history_fname)
+    )
+    p.start()
+
+def plot_rx(rx_data, fname):
+    fig, ax1 = plt.subplots()
+    epochs = range(len(rx_data))
+    ax1.set_xlabel('Epochs')
+    ax1.set_ylabel('Server RX (Bytes)', color='tab:red')
+    ax1.plot(epochs, rx_data, color='tab:red')
+    ax1.tick_params(axis='y', labelcolor='tab:red')
+    fig.tight_layout()  # otherwise the right y-label is slightly clipped
+    plt.savefig(fname)
+    plt.show()
 
 def show_next_port(fserver_obj):
     print("Next Available Client Port: {}".format(fserver_obj._port))
@@ -117,6 +134,7 @@ def shell_help():
     print("next port                 -- Shows port number for the next client connection")
     print("server ip                 -- Shows server's binded IP address")
     print("start federated averaging -- Starts federated averaging with connected clients")
+    print("bandwidth history         -- Plots network data for received update objects")
     print("reset model               -- Resets server model to restart federated scheme")
     print("quit                      -- Closes sockets and exits shell")
 
@@ -127,7 +145,6 @@ def server_shell(fserver_obj):
         except EOFError:
             quit(fserver_obj)
             break
-
         if input_cmd == '':
             continue
         elif input_cmd == 'connections':
@@ -143,6 +160,8 @@ def server_shell(fserver_obj):
             )
             fed_avg.setDaemon(True)
             fed_avg.start()
+        elif input_cmd == "bandwidth history":
+            plot_rx_history(fserver_obj)
         elif input_cmd == 'reset model':
             reset_model(fserver_obj)
         elif input_cmd == 'quit':

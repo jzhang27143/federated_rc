@@ -4,5 +4,6 @@ server_config = ServerConfig(
     wlan_ip = 'auto-discover',
     port = '8880',
     model_file_name = 'mnist_sample_cnn_server.pt',
-    grad_threshold = 0.5
+    rx_history_file_name = 'rx_history.png',
+    grad_threshold = 1.5
 )
