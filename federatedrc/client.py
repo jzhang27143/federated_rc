@@ -34,7 +34,7 @@ class ClientConfig(NamedTuple):
     criterion: torch.nn.Module
     optimizer: torch.optim.Optimizer
     optimizer_kwargs: dict
-    parameter_threshold: int
+    parameter_threshold: float
 
 
 class FederatedClient:
@@ -131,8 +131,25 @@ class FederatedClient:
                     model_parameters = list(), 
                     client_sent = False
                 )
-
-            parameter_threshold(update_obj, self._parameter_threshold)
+            # Compression technique - OBS or (default) thresholding
+            elif self._parameter_threshold > 0:
+                th_parameters = parameter_threshold(
+                    update_obj.model_parameters,
+                    self._parameter_threshold
+                )
+                update_obj = network.UpdateObject(
+                    n_samples = update_obj.n_samples,
+                    model_parameters = th_parameters
+                )
+                if self._verbose:
+                    n_pruned = sum(
+                        torch.sum(tensor == 0).item()
+                        for tensor in th_parameters
+                    )
+                    n_total = sum(
+                        tensor.numel() for tensor in self._model.parameters()
+                    )
+                    print(f"Thresholding compression: {100*n_pruned/n_total:.3f}%%")
 
             torch.save(update_obj, tmp_fname)
             err, tx_bytes = network.send_model_file(tmp_fname, self._socket)

@@ -18,10 +18,14 @@ def gradient_norm(trained_model, base_model):
         tensor_norms.append(torch.norm(trained_tensor - base_tensor))
     return torch.norm(torch.tensor(tensor_norms))
 
-def parameter_threshold(trained_model, threshold, value=0):
-    threshold = nn.Threshold(threshold, value, inplace=True)
-    for tensor in trained_model.parameters():
-        threshold(tensor)
+def parameter_threshold(parameter_list, threshold, value=0):
+    threshold_parameters = []
+    for tensor in parameter_list:
+        mask = torch.abs(tensor) > threshold
+        threshold_tensor = torch.zeros_like(tensor)
+        threshold_tensor[mask] = tensor[mask]
+        threshold_parameters.append(threshold_tensor)
+    return threshold_parameters
 
 def error_handle(fclient_obj, err):
     if err == 0:
@@ -129,6 +133,25 @@ def plot_results(stats_dict, fname):
     plt.savefig(fname)
     plt.show()
 
+def plot_tx_history(fclient_obj):
+    p = multiprocessing.Process(
+        target=plot_tx,
+        args=(fclient_obj._stats_dict, fclient_obj._tx_history_fname)
+    )
+    p.start()
+
+def plot_tx(stats_dict, fname):
+    tx_data = stats_dict['tx_data']
+    fig, ax1 = plt.subplots()
+    episodes = range(len(tx_data))
+    ax1.set_xlabel('Episodes')
+    ax1.set_ylabel('Client TX (Bytes)', color='tab:blue')
+    ax1.plot(episodes, tx_data, color='tab:blue')
+    ax1.tick_params(axis='y', labelcolor='tab:blue')
+    fig.tight_layout()  # otherwise the right y-label is slightly clipped
+    plt.savefig(fname)
+    plt.show()
+
 def shell_help():
     print("--------------------------- Client Shell Usage -------------------------------")
     print("server connection                    -- Shows server connection information")
@@ -136,6 +159,7 @@ def shell_help():
     print("model accuracy                       -- Shows client's current model accuraccy")
     print("model loss                           -- Shows client's current model loss")
     print("training history                     -- Generates and saves a chart with training history")
+    print("transmission history                 -- Generates and saves a chart with bandwidth usage")
     print("quit                                 -- Terminates the client program")
 
 def client_shell(fclient_obj):
@@ -160,6 +184,8 @@ def client_shell(fclient_obj):
             show_model_loss(fclient_obj)
         elif input_cmd == 'training history':
             plot_training_history(fclient_obj)
+        elif input_cmd == 'transmission history':
+            plot_tx_history(fclient_obj)
         elif input_cmd == 'quit':
             quit(fclient_obj)
             break

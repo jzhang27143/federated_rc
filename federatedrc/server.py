@@ -163,7 +163,10 @@ class FederatedServer:
 
             for idx, response in enumerate(responses):
                 err, bytes_received = response[0], response[1]
-                conn_obj = self._connections[idx]
+                try:
+                    conn_obj = self._connections[idx]
+                except IndexError:
+                    break
                 if err:
                     error_handle(self, err, conn_obj)
                     if self._verbose:
