@@ -145,8 +145,8 @@ class FederatedClient:
                 
                 # If advantageous, convert to COO-representation
                 coo_tmp_fname = 'tmp_coo_' + self._model_fname
-                nonzero_idx = [torch.nonzero(t, as_tuple=True) for t in th_parameters]
-                coo_format = convert_parameters(self._model, nonzero_idx)
+                th_parameters = parameter_threshold(list(self._model.parameters()), self._parameter_threshold)
+                coo_format = convert_parameters(self._model, th_parameters)
                 coo_update_obj = network.UpdateObject(
                     n_samples = update_obj.n_samples,
                     model_parameters = coo_format,

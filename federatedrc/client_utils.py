@@ -87,27 +87,23 @@ def client_train_local(fclient_obj, episode):
         model_parameters = list(model.parameters())
     )
 
-### Simon writes this, putting it here temporarily
-### Model as input, returns indices of parameters that are worth keeping
-def threshold_parameters(model):
-    nonzero = []
-    for i in range(len(list(model.parameters()))):
-        nonzero.append(torch.nonzero(list(model.parameters())[i], as_tuple=False))
-    return nonzero
-
 ## Expects parameter_indices to be a list of tensors, each tensor representing a layer in the nn
 def convert_parameters(model, parameter_indices):
+    nonzero_idx = [torch.nonzero(t.reshape(-1), as_tuple=False).reshape(-1) for t in parameter_indices]
     parameters = list(model.parameters())
     index_representation = []
-    for i in range(len(parameter_indices)):
-        if not parameter_indices[i].tolist():
+
+    for i in range(len(nonzero_idx)):
+        if not nonzero_idx[i].tolist():
             index_representation.append([])
             continue
         layer_representation = []
-        indices_list = parameter_indices[i].tolist()
+        indices_list = nonzero_idx[i].tolist()
+
         for index in indices_list:
             value = []
-            value.append(parameters[i][tuple(index)].tolist())
+            flat_parameter = parameters[i].reshape(-1)
+            value.append(flat_parameter[index].tolist())
             value.append(index)
             layer_representation.append(value)
         index_representation.append(layer_representation)

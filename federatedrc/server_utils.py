@@ -57,10 +57,13 @@ def broadcast_model(fserver_obj):
 def build_params(model, parameter_indices):
     blank_model = copy.deepcopy(model)
     blank_params = list(blank_model.parameters())
+    built_params = []
     for i in range(len(blank_params)):
+        flat_blank_params = blank_params[i].reshape(-1).tolist()
         for index in parameter_indices[i]:
-            blank_params[i][tuple(index[1])] = index[0]
-    return blank_params
+            flat_blank_params[index[1]] = index[0]
+        built_params.append(torch.tensor(flat_blank_params).reshape(tuple(blank_params[i].size())))
+    return built_params
 
 def aggregate_models(update_objects):
     n_tensors = len(update_objects[0].model_parameters)
