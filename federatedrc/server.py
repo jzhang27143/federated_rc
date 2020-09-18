@@ -187,7 +187,9 @@ class FederatedServer:
 
                     update_obj = network.UpdateObject(
                         n_samples = update_obj.n_samples,
-                        model_parameters = build_params(self._model, update_obj.model_parameters)
+                        model_parameters = build_params(
+                            self._model, update_obj.model_parameters
+                        )
                     ) if update_obj.parameter_indices else update_obj
 
                     if self._verbose:

@@ -1,11 +1,11 @@
 import _thread
+import copy
 import errno
 import matplotlib.pyplot as plt
 import multiprocessing
 import threading
 import torch
 import socket
-import copy
 
 from federatedrc import network
 

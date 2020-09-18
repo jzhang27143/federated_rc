@@ -145,7 +145,6 @@ class FederatedClient:
                 
                 # If advantageous, convert to COO-representation
                 coo_tmp_fname = 'tmp_coo_' + self._model_fname
-                th_parameters = parameter_threshold(list(self._model.parameters()), self._parameter_threshold)
                 coo_format = convert_parameters(self._model, th_parameters)
                 coo_update_obj = network.UpdateObject(
                     n_samples = update_obj.n_samples,
@@ -155,7 +154,10 @@ class FederatedClient:
                 torch.save(coo_update_obj, coo_tmp_fname)
                 target_fname = tmp_fname if os.path.getsize(tmp_fname) \
                     <= os.path.getsize(coo_tmp_fname) else coo_tmp_fname
+
                 if self._verbose:
+                    if target_fname == coo_tmp_fname:
+                        print("Using COO Representation")
                     n_pruned = sum(
                         torch.sum(tensor == 0).item()
                         for tensor in th_parameters

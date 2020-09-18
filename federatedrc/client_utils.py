@@ -87,9 +87,12 @@ def client_train_local(fclient_obj, episode):
         model_parameters = list(model.parameters())
     )
 
-## Expects parameter_indices to be a list of tensors, each tensor representing a layer in the nn
+# Expects parameter_indices to be a list of tensors representing nn layers
 def convert_parameters(model, parameter_indices):
-    nonzero_idx = [torch.nonzero(t.reshape(-1), as_tuple=False).reshape(-1) for t in parameter_indices]
+    nonzero_idx = [
+        torch.nonzero(t.reshape(-1), as_tuple=False).reshape(-1)
+        for t in parameter_indices
+    ]
     parameters = list(model.parameters())
     index_representation = []
 
