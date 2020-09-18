@@ -13,6 +13,7 @@ from typing import NamedTuple
 from federatedrc import network
 from federatedrc.server_utils import (
     aggregate_models,
+    build_params,
     broadcast_initial_model,
     broadcast_model,
     error_handle,
@@ -183,6 +184,13 @@ class FederatedServer:
                         n_samples = update_obj.n_samples,
                         model_parameters = list(self._model.parameters())
                     ) if not update_obj.client_sent else update_obj
+
+                    update_obj = network.UpdateObject(
+                        n_samples = update_obj.n_samples,
+                        model_parameters = build_params(
+                            self._model, update_obj.model_parameters
+                        )
+                    ) if update_obj.parameter_indices else update_obj
 
                     if self._verbose:
                         print('Update Received from Client {}'.format(idx))

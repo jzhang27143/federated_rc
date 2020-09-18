@@ -87,6 +87,31 @@ def client_train_local(fclient_obj, episode):
         model_parameters = list(model.parameters())
     )
 
+# Expects parameter_indices to be a list of tensors representing nn layers
+def convert_parameters(model, parameter_indices):
+    nonzero_idx = [
+        torch.nonzero(t.reshape(-1), as_tuple=False).reshape(-1)
+        for t in parameter_indices
+    ]
+    parameters = list(model.parameters())
+    index_representation = []
+
+    for i in range(len(nonzero_idx)):
+        if not nonzero_idx[i].tolist():
+            index_representation.append([])
+            continue
+        layer_representation = []
+        indices_list = nonzero_idx[i].tolist()
+
+        for index in indices_list:
+            value = []
+            flat_parameter = parameters[i].reshape(-1)
+            value.append(flat_parameter[index].tolist())
+            value.append(index)
+            layer_representation.append(value)
+        index_representation.append(layer_representation)
+    return index_representation
+
 def show_connection(fclient_obj):
     print("Server IP Address: {}, Server Port: {}".format(
             fclient_obj._server_ip, fclient_obj._port))

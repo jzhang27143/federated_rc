@@ -13,6 +13,7 @@ from typing import NamedTuple
 from federatedrc.client_utils import (
     client_shell,
     client_train_local,
+    convert_parameters,
     error_handle,
     gradient_norm,
     parameter_threshold,
@@ -141,7 +142,22 @@ class FederatedClient:
                     n_samples = update_obj.n_samples,
                     model_parameters = th_parameters
                 )
+                
+                # If advantageous, convert to COO-representation
+                coo_tmp_fname = 'tmp_coo_' + self._model_fname
+                coo_format = convert_parameters(self._model, th_parameters)
+                coo_update_obj = network.UpdateObject(
+                    n_samples = update_obj.n_samples,
+                    model_parameters = coo_format,
+                    parameter_indices = True
+                )
+                torch.save(coo_update_obj, coo_tmp_fname)
+                target_fname = tmp_fname if os.path.getsize(tmp_fname) \
+                    <= os.path.getsize(coo_tmp_fname) else coo_tmp_fname
+
                 if self._verbose:
+                    if target_fname == coo_tmp_fname:
+                        print("Using COO Representation")
                     n_pruned = sum(
                         torch.sum(tensor == 0).item()
                         for tensor in th_parameters
@@ -151,8 +167,8 @@ class FederatedClient:
                     )
                     print(f"Thresholding compression: {100*n_pruned/n_total:.3f}%")
 
-            torch.save(update_obj, tmp_fname)
-            err, tx_bytes = network.send_model_file(tmp_fname, self._socket)
+            torch.save(update_obj, target_fname)           
+            err, tx_bytes = network.send_model_file(target_fname, self._socket)
             error_handle(self, err)
             self._tx_bytes += tx_bytes
             self._stats_dict['tx_data'].append(self._tx_bytes)
