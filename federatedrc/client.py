@@ -149,7 +149,7 @@ class FederatedClient:
                     n_total = sum(
                         tensor.numel() for tensor in self._model.parameters()
                     )
-                    print(f"Thresholding compression: {100*n_pruned/n_total:.3f}%%")
+                    print(f"Thresholding compression: {100*n_pruned/n_total:.3f}%")
 
             torch.save(update_obj, tmp_fname)
             err, tx_bytes = network.send_model_file(tmp_fname, self._socket)

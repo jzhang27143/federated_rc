@@ -189,7 +189,8 @@ class FederatedServer:
                     update_objects.append(update_obj)
 
             # Stop if all client connections drop
-            if len(self._connections) == 0 or end_session:
+            if len(self._connections) == 0 or len(update_objects) == 0 \
+                or end_session:
                 break
 
             aggregate_params = aggregate_models(update_objects)
