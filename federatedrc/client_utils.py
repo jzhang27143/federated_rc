@@ -2,11 +2,14 @@ import _thread
 from collections import defaultdict
 import matplotlib.pyplot as plt
 import multiprocessing
+import numpy as np
 import socket
 import threading
 import torch
 import torch.nn as nn
+from torch.nn.utils import parameters_to_vector, vector_to_parameters
 import torch.optim as optim
+from tqdm import tqdm
 
 from federatedrc import network
 
@@ -65,11 +68,17 @@ def client_train_local(fclient_obj, episode):
             # gradient update
             predictions = model(image)
             loss = criterion(predictions, label)
-            loss.backward()
+            loss.backward(retain_graph=True)
 
             # update model
-            optimizer.step()
             running_loss += loss.item()
+            grad_vec = torch.autograd.grad(
+                loss, model.parameters(), create_graph=True
+            )
+
+            # delay step for last batch until OBS finishes to match versions
+            if epoch < epochs - 1 or batch_idx < len(train_loader) - 1:
+                optimizer.step()
 
         shared_test_acc = None if not fclient_obj._shared_test else \
             fclient_obj.calculate_accuracy(shared_test=True)
@@ -82,9 +91,49 @@ def client_train_local(fclient_obj, episode):
         if epoch % 2 == 0 and fclient_obj._verbose:
             print('Epoch {} Loss: {}'.format(epoch, running_loss))
 
+    send_parameters = list(model.parameters())
+
+    # Optimal Brain Surgeon pruning
+    if fclient_obj._use_obs:
+        param_vec_flat = parameters_to_vector(model.parameters())
+        grad_vec_flat = parameters_to_vector(grad_vec)
+        n_parameters = len(param_vec_flat)
+        prune_target = int(0.2 * n_parameters) # TODO: configure prune_target
+        n_samples = 10 # TODO: configure n_samples
+
+        v = np.zeros(len(param_vec_flat), dtype=np.float32)
+        parameters_pruned = param_vec_flat.tolist()
+
+        for i in tqdm(range(prune_target)):
+            param_subset = np.random.choice(
+                n_parameters, size=n_samples, replace=False
+            )
+            v_qi = v[:]
+            min_error, min_error_idx = float('inf'), None
+
+            for idx in param_subset:
+                v_qi[idx] += param_vec_flat[idx]
+
+                # Compute the Hessian-vector product
+                vec_product = torch.dot(grad_vec_flat, torch.tensor(v_qi, requires_grad=True))
+                hv_product = torch.autograd.grad(vec_product, model.parameters(), create_graph=True)
+                hv_product_flat = torch.cat([torch.reshape(tensor, (-1,)) for tensor in hv_product])
+                error_increase = torch.dot(torch.from_numpy(v_qi), hv_product_flat)
+
+                if error_increase <= min_error:
+                    min_error, min_error_idx = error_increase, idx
+                v_qi[idx] -= param_vec_flat[idx]
+
+            v[min_error_idx] = param_vec_flat[min_error_idx]
+            parameters_pruned[min_error_idx] = 0
+
+        send_parameters = [torch.zeros_like(t) for t in model.parameters()]
+        vector_to_parameters(torch.Tensor(parameters_pruned), send_parameters)
+
+    optimizer.step()
     return running_loss, network.UpdateObject(
         n_samples = len(fclient_obj._train),
-        model_parameters = list(model.parameters())
+        model_parameters = send_parameters
     )
 
 # Expects parameter_indices to be a list of tensors representing nn layers

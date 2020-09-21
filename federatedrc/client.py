@@ -37,7 +37,6 @@ class ClientConfig(NamedTuple):
     optimizer_kwargs: dict
     parameter_threshold: float
 
-
 class FederatedClient:
     def __init__(
         self,
@@ -47,6 +46,7 @@ class FederatedClient:
         interactive=False,
         shared_test=None,
         verbose=False,
+        use_obs=False,
     ):
         self._train = train
         self._test = test
@@ -54,6 +54,7 @@ class FederatedClient:
         self._configpath = configpath
         self._interactive = interactive
         self._verbose = verbose
+        self._use_obs = use_obs
 
         self._model = None
         self._loss = None
@@ -133,7 +134,7 @@ class FederatedClient:
                     client_sent = False
                 )
             # Compression technique - OBS or (default) thresholding
-            elif self._parameter_threshold > 0:
+            else:
                 th_parameters = parameter_threshold(
                     update_obj.model_parameters,
                     self._parameter_threshold
@@ -152,11 +153,11 @@ class FederatedClient:
                     parameter_indices = True
                 )
                 torch.save(coo_update_obj, coo_tmp_fname)
-                target_fname = tmp_fname if os.path.getsize(tmp_fname) \
+                tmp_fname = tmp_fname if os.path.getsize(tmp_fname) \
                     <= os.path.getsize(coo_tmp_fname) else coo_tmp_fname
 
                 if self._verbose:
-                    if target_fname == coo_tmp_fname:
+                    if tmp_fname == coo_tmp_fname:
                         print("Using COO Representation")
                     n_pruned = sum(
                         torch.sum(tensor == 0).item()
@@ -165,10 +166,10 @@ class FederatedClient:
                     n_total = sum(
                         tensor.numel() for tensor in self._model.parameters()
                     )
-                    print(f"Thresholding compression: {100*n_pruned/n_total:.3f}%")
+                    print(f"Compression Factor: {100*n_pruned/n_total:.3f}%")
 
-            torch.save(update_obj, target_fname)           
-            err, tx_bytes = network.send_model_file(target_fname, self._socket)
+            torch.save(update_obj, tmp_fname)
+            err, tx_bytes = network.send_model_file(tmp_fname, self._socket)
             error_handle(self, err)
             self._tx_bytes += tx_bytes
             self._stats_dict['tx_data'].append(self._tx_bytes)

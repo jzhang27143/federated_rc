@@ -104,7 +104,7 @@ def plot_rx_history(fserver_obj):
 def plot_rx(rx_data, fname):
     fig, ax1 = plt.subplots()
     epochs = range(len(rx_data))
-    ax1.set_xlabel('Epochs')
+    ax1.set_xlabel('Episodes')
     ax1.set_ylabel('Server RX (Bytes)', color='tab:red')
     ax1.plot(epochs, rx_data, color='tab:red')
     ax1.tick_params(axis='y', labelcolor='tab:red')
