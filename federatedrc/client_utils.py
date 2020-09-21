@@ -2,11 +2,14 @@ import _thread
 from collections import defaultdict
 import matplotlib.pyplot as plt
 import multiprocessing
+import numpy as np
 import socket
 import threading
 import torch
 import torch.nn as nn
+from torch.nn.utils import parameters_to_vector, vector_to_parameters
 import torch.optim as optim
+from tqdm import tqdm
 
 from federatedrc import network
 
@@ -17,6 +20,15 @@ def gradient_norm(trained_model, base_model):
     ):
         tensor_norms.append(torch.norm(trained_tensor - base_tensor))
     return torch.norm(torch.tensor(tensor_norms))
+
+def parameter_threshold(parameter_list, threshold, value=0):
+    threshold_parameters = []
+    for tensor in parameter_list:
+        mask = torch.abs(tensor) > threshold
+        threshold_tensor = torch.zeros_like(tensor)
+        threshold_tensor[mask] = tensor[mask]
+        threshold_parameters.append(threshold_tensor)
+    return threshold_parameters
 
 def error_handle(fclient_obj, err):
     if err == 0:
@@ -57,11 +69,17 @@ def client_train_local(fclient_obj, episode):
             # gradient update
             predictions = model(image)
             loss = criterion(predictions, label)
-            loss.backward()
+            loss.backward(retain_graph=True)
 
             # update model
-            optimizer.step()
             running_loss += loss.item()
+            grad_vec = torch.autograd.grad(
+                loss, model.parameters(), create_graph=True
+            )
+
+            # delay step for last batch until OBS finishes to match versions
+            if epoch < epochs - 1 or batch_idx < len(train_loader) - 1:
+                optimizer.step()
 
         shared_test_acc = None if not fclient_obj._shared_test else \
             fclient_obj.calculate_accuracy(shared_test=True)
@@ -74,10 +92,75 @@ def client_train_local(fclient_obj, episode):
         if epoch % 2 == 0 and fclient_obj._verbose:
             print('Epoch {} Loss: {}'.format(epoch, running_loss))
 
+    send_parameters = list(model.parameters())
+
+    # Optimal Brain Surgeon pruning
+    if fclient_obj._use_obs:
+        param_vec_flat = parameters_to_vector(model.parameters())
+        grad_vec_flat = parameters_to_vector(grad_vec)
+        n_parameters = len(param_vec_flat)
+        prune_target = int(0.2 * n_parameters) # TODO: configure prune_target
+        n_samples = 10 # TODO: configure n_samples
+
+        v = np.zeros(len(param_vec_flat), dtype=np.float32)
+        parameters_pruned = param_vec_flat.tolist()
+
+        for i in tqdm(range(prune_target)):
+            param_subset = np.random.choice(
+                n_parameters, size=n_samples, replace=False
+            )
+            v_qi = v[:]
+            min_error, min_error_idx = float('inf'), None
+
+            for idx in param_subset:
+                v_qi[idx] += param_vec_flat[idx]
+
+                # Compute the Hessian-vector product
+                vec_product = torch.dot(grad_vec_flat, torch.tensor(v_qi, requires_grad=True))
+                hv_product = torch.autograd.grad(vec_product, model.parameters(), create_graph=True)
+                hv_product_flat = torch.cat([torch.reshape(tensor, (-1,)) for tensor in hv_product])
+                error_increase = torch.dot(torch.from_numpy(v_qi), hv_product_flat)
+
+                if error_increase <= min_error:
+                    min_error, min_error_idx = error_increase, idx
+                v_qi[idx] -= param_vec_flat[idx]
+
+            v[min_error_idx] = param_vec_flat[min_error_idx]
+            parameters_pruned[min_error_idx] = 0
+
+        send_parameters = [torch.zeros_like(t) for t in model.parameters()]
+        vector_to_parameters(torch.Tensor(parameters_pruned), send_parameters)
+
+    optimizer.step()
     return running_loss, network.UpdateObject(
         n_samples = fclient_obj._episode_train_size,
-        model_parameters = list(model.parameters())
+        model_parameters = send_parameters
     )
+
+# Expects parameter_indices to be a list of tensors representing nn layers
+def convert_parameters(model, parameter_indices):
+    nonzero_idx = [
+        torch.nonzero(t.reshape(-1), as_tuple=False).reshape(-1)
+        for t in parameter_indices
+    ]
+    parameters = list(model.parameters())
+    index_representation = []
+
+    for i in range(len(nonzero_idx)):
+        if not nonzero_idx[i].tolist():
+            index_representation.append([])
+            continue
+        layer_representation = []
+        indices_list = nonzero_idx[i].tolist()
+
+        for index in indices_list:
+            value = []
+            flat_parameter = parameters[i].reshape(-1)
+            value.append(flat_parameter[index].tolist())
+            value.append(index)
+            layer_representation.append(value)
+        index_representation.append(layer_representation)
+    return index_representation
 
 def show_connection(fclient_obj):
     print("Server IP Address: {}, Server Port: {}".format(
@@ -103,7 +186,7 @@ def quit(fclient_obj):
 
 def plot_training_history(fclient_obj):
     p = multiprocessing.Process(
-        target=plot_results, 
+        target=plot_results,
         args=(fclient_obj._stats_dict, fclient_obj._training_history_fname)
     )
     p.start()
@@ -127,7 +210,7 @@ def plot_results(stats_dict, fname):
 
 def plot_tx_history(fclient_obj):
     p = multiprocessing.Process(
-        target=plot_tx, 
+        target=plot_tx,
         args=(fclient_obj._stats_dict, fclient_obj._tx_history_fname)
     )
     p.start()

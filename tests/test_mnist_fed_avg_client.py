@@ -31,6 +31,7 @@ def launch_federated_client(args):
         configpath = args.configpath[0],
         interactive = args.interactive,
         verbose = args.verbose,
+        use_obs = args.use_obs
     )
     fc.train_fed_avg()
 
@@ -61,6 +62,10 @@ if __name__ == '__main__':
     parser.add_argument(
         '--n_test', nargs=1, dest='n_test', default=800,
         help='number of images to use for testing'
+    )
+    parser.add_argument(
+        '--use_obs', action='store_true', dest='use_obs',
+        help='flag to prune with greedy optimal brain surgeon'
     )
     args = parser.parse_args()
     launch_federated_client(args)

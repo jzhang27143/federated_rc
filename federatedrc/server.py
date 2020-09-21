@@ -13,6 +13,7 @@ from typing import NamedTuple
 from federatedrc import network
 from federatedrc.server_utils import (
     aggregate_models,
+    build_params,
     broadcast_initial_model,
     broadcast_model,
     error_handle,
@@ -163,7 +164,10 @@ class FederatedServer:
 
             for idx, response in enumerate(responses):
                 err, bytes_received = response[0], response[1]
-                conn_obj = self._connections[idx]
+                try:
+                    conn_obj = self._connections[idx]
+                except IndexError:
+                    break
                 if err:
                     error_handle(self, err, conn_obj)
                     if self._verbose:
@@ -181,12 +185,20 @@ class FederatedServer:
                         model_parameters = list(self._model.parameters())
                     ) if not update_obj.client_sent else update_obj
 
+                    update_obj = network.UpdateObject(
+                        n_samples = update_obj.n_samples,
+                        model_parameters = build_params(
+                            self._model, update_obj.model_parameters
+                        )
+                    ) if update_obj.parameter_indices else update_obj
+
                     if self._verbose:
                         print('Update Received from Client {}'.format(idx))
                     update_objects.append(update_obj)
 
             # Stop if all client connections drop
-            if len(self._connections) == 0 or end_session:
+            if len(self._connections) == 0 or len(update_objects) == 0 \
+                or end_session:
                 break
 
             aggregate_params = aggregate_models(update_objects)

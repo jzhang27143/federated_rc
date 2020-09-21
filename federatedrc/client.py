@@ -13,8 +13,10 @@ from typing import NamedTuple
 from federatedrc.client_utils import (
     client_shell,
     client_train_local,
+    convert_parameters,
     error_handle,
     gradient_norm,
+    parameter_threshold,
     plot_training_history,
     plot_tx_history,
 )
@@ -34,7 +36,7 @@ class ClientConfig(NamedTuple):
     criterion: torch.nn.Module
     optimizer: torch.optim.Optimizer
     optimizer_kwargs: dict
-
+    parameter_threshold: float
 
 class FederatedClient:
     def __init__(
@@ -45,6 +47,7 @@ class FederatedClient:
         interactive=False,
         shared_test=None,
         verbose=False,
+        use_obs=False,
     ):
         self._train = train
         self._test = test
@@ -52,6 +55,7 @@ class FederatedClient:
         self._configpath = configpath
         self._interactive = interactive
         self._verbose = verbose
+        self._use_obs = use_obs
 
         self._model = None
         self._loss = None
@@ -95,6 +99,7 @@ class FederatedClient:
         self._criterion = config.criterion
         self._optim_class = config.optimizer
         self._optim_kwargs = config.optimizer_kwargs
+        self._parameter_threshold = config.parameter_threshold
 
     def connect_to_server(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -130,6 +135,40 @@ class FederatedClient:
                     model_parameters = list(), 
                     client_sent = False
                 )
+            # Compression technique - OBS or (default) thresholding
+            else:
+                th_parameters = parameter_threshold(
+                    update_obj.model_parameters,
+                    self._parameter_threshold
+                )
+                update_obj = network.UpdateObject(
+                    n_samples = update_obj.n_samples,
+                    model_parameters = th_parameters
+                )
+                
+                # If advantageous, convert to COO-representation
+                coo_tmp_fname = 'tmp_coo_' + self._model_fname
+                coo_format = convert_parameters(self._model, th_parameters)
+                coo_update_obj = network.UpdateObject(
+                    n_samples = update_obj.n_samples,
+                    model_parameters = coo_format,
+                    parameter_indices = True
+                )
+                torch.save(coo_update_obj, coo_tmp_fname)
+                tmp_fname = tmp_fname if os.path.getsize(tmp_fname) \
+                    <= os.path.getsize(coo_tmp_fname) else coo_tmp_fname
+
+                if self._verbose:
+                    if tmp_fname == coo_tmp_fname:
+                        print("Using COO Representation")
+                    n_pruned = sum(
+                        torch.sum(tensor == 0).item()
+                        for tensor in th_parameters
+                    )
+                    n_total = sum(
+                        tensor.numel() for tensor in self._model.parameters()
+                    )
+                    print(f"Compression Factor: {100*n_pruned/n_total:.3f}%")
 
             torch.save(update_obj, tmp_fname)
             err, tx_bytes = network.send_model_file(tmp_fname, self._socket)
@@ -178,7 +217,7 @@ class FederatedClient:
             maxindex = np.argmax(preds)
             if maxindex == ans:
                 total_correct += 1
-            
+
         return total_correct / total * 100
 
     def update_training_history(self, loss, test_acc, shared_test_acc=None):

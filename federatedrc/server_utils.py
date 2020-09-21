@@ -1,4 +1,5 @@
 import _thread
+import copy
 import errno
 import matplotlib.pyplot as plt
 import multiprocessing
@@ -53,6 +54,17 @@ def broadcast_model(fserver_obj):
         )
         error_handle(fserver_obj, err, conn_obj)
 
+def build_params(model, parameter_indices):
+    blank_model = copy.deepcopy(model)
+    blank_params = list(blank_model.parameters())
+    built_params = []
+    for i in range(len(blank_params)):
+        flat_blank_params = blank_params[i].reshape(-1).tolist()
+        for index in parameter_indices[i]:
+            flat_blank_params[index[1]] = index[0]
+        built_params.append(torch.tensor(flat_blank_params).reshape(tuple(blank_params[i].size())))
+    return built_params
+
 def aggregate_models(update_objects):
     n_tensors = len(update_objects[0].model_parameters)
     N = sum(obj.n_samples for obj in update_objects)
@@ -92,7 +104,7 @@ def plot_rx_history(fserver_obj):
 def plot_rx(rx_data, fname):
     fig, ax1 = plt.subplots()
     epochs = range(len(rx_data))
-    ax1.set_xlabel('Epochs')
+    ax1.set_xlabel('Episodes')
     ax1.set_ylabel('Server RX (Bytes)', color='tab:red')
     ax1.plot(epochs, rx_data, color='tab:red')
     ax1.tick_params(axis='y', labelcolor='tab:red')
