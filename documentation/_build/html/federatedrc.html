@@ -1,0 +1,545 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>federatedrc package &#8212; Resource Constrained Federated Learning v1 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="federatedrc" href="modules.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="federatedrc"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Resource Constrained Federated Learning v1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">federatedrc</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="federatedrc-package">
+<h1>federatedrc package<a class="headerlink" href="#federatedrc-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-federatedrc.client">
+<span id="federatedrc-client-module"></span><h2>federatedrc.client module<a class="headerlink" href="#module-federatedrc.client" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="federatedrc.client.ClientConfig">
+<em class="property">class </em><code class="sig-prename descclassname">federatedrc.client.</code><code class="sig-name descname">ClientConfig</code><a class="headerlink" href="#federatedrc.client.ClientConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<p>Configuration template that is used to created a FederatedClient</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>NamedTuple mixed: A list containing each member variable</p>
+</dd>
+</dl>
+<p>Parameters:</p>
+<dl class="method">
+<dt id="federatedrc.client.ClientConfig.batch_size">
+<em class="property">property </em><code class="sig-name descname">batch_size</code><a class="headerlink" href="#federatedrc.client.ClientConfig.batch_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>(int) The batch size for client training.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="federatedrc.client.ClientConfig.criterion">
+<em class="property">property </em><code class="sig-name descname">criterion</code><a class="headerlink" href="#federatedrc.client.ClientConfig.criterion" title="Permalink to this definition">¶</a></dt>
+<dd><p>(torch.nn.Module) The IP of the server the client will connect to.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="federatedrc.client.ClientConfig.episodes">
+<em class="property">property </em><code class="sig-name descname">episodes</code><a class="headerlink" href="#federatedrc.client.ClientConfig.episodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>(int) Number of episodes the client should run for.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="federatedrc.client.ClientConfig.local_epochs">
+<em class="property">property </em><code class="sig-name descname">local_epochs</code><a class="headerlink" href="#federatedrc.client.ClientConfig.local_epochs" title="Permalink to this definition">¶</a></dt>
+<dd><p>(int) Number of local epochs per spisode.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="federatedrc.client.ClientConfig.model_file_name">
+<em class="property">property </em><code class="sig-name descname">model_file_name</code><a class="headerlink" href="#federatedrc.client.ClientConfig.model_file_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>(str) Filename that the model is saved in.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="federatedrc.client.ClientConfig.optimizer">
+<em class="property">property </em><code class="sig-name descname">optimizer</code><a class="headerlink" href="#federatedrc.client.ClientConfig.optimizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>(torch.optim.Optimizer) The IP of the server the client will connect to.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="federatedrc.client.ClientConfig.optimizer_kwargs">
+<em class="property">property </em><code class="sig-name descname">optimizer_kwargs</code><a class="headerlink" href="#federatedrc.client.ClientConfig.optimizer_kwargs" title="Permalink to this definition">¶</a></dt>
+<dd><p>(dict) The IP of the server the client will connect to.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="federatedrc.client.ClientConfig.parameter_threshold">
+<em class="property">property </em><code class="sig-name descname">parameter_threshold</code><a class="headerlink" href="#federatedrc.client.ClientConfig.parameter_threshold" title="Permalink to this definition">¶</a></dt>
+<dd><p>(float) Value to threshold parameters on.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="federatedrc.client.ClientConfig.port">
+<em class="property">property </em><code class="sig-name descname">port</code><a class="headerlink" href="#federatedrc.client.ClientConfig.port" title="Permalink to this definition">¶</a></dt>
+<dd><p>(int) The port of the server to connect to.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="federatedrc.client.ClientConfig.server_ip">
+<em class="property">property </em><code class="sig-name descname">server_ip</code><a class="headerlink" href="#federatedrc.client.ClientConfig.server_ip" title="Permalink to this definition">¶</a></dt>
+<dd><p>(str) The IP of the server the client will connect to.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="federatedrc.client.ClientConfig.training_history_file_name">
+<em class="property">property </em><code class="sig-name descname">training_history_file_name</code><a class="headerlink" href="#federatedrc.client.ClientConfig.training_history_file_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>(str) Name of png file with graph of model accuracy.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="federatedrc.client.ClientConfig.tx_history_file_name">
+<em class="property">property </em><code class="sig-name descname">tx_history_file_name</code><a class="headerlink" href="#federatedrc.client.ClientConfig.tx_history_file_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>(str) Name of png file with graph of system bytes transferred.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="federatedrc.client.FederatedClient">
+<em class="property">class </em><code class="sig-prename descclassname">federatedrc.client.</code><code class="sig-name descname">FederatedClient</code><span class="sig-paren">(</span><em class="sig-param">train</em>, <em class="sig-param">test</em>, <em class="sig-param">configpath=''</em>, <em class="sig-param">interactive=False</em>, <em class="sig-param">shared_test=None</em>, <em class="sig-param">verbose=False</em>, <em class="sig-param">use_obs=False</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client.FederatedClient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>(list) The training data that will be used.</p>
+<dl class="method">
+<dt id="federatedrc.client.FederatedClient.calculate_accuracy">
+<code class="sig-name descname">calculate_accuracy</code><span class="sig-paren">(</span><em class="sig-param">shared_test=False</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client.FederatedClient.calculate_accuracy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="federatedrc.client.FederatedClient.configure">
+<code class="sig-name descname">configure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client.FederatedClient.configure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="federatedrc.client.FederatedClient.connect_to_server">
+<code class="sig-name descname">connect_to_server</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client.FederatedClient.connect_to_server" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="federatedrc.client.FederatedClient.train_fed_avg">
+<code class="sig-name descname">train_fed_avg</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client.FederatedClient.train_fed_avg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="federatedrc.client.FederatedClient.update_training_history">
+<code class="sig-name descname">update_training_history</code><span class="sig-paren">(</span><em class="sig-param">loss</em>, <em class="sig-param">test_acc</em>, <em class="sig-param">shared_test_acc=None</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client.FederatedClient.update_training_history" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-federatedrc.client_utils">
+<span id="federatedrc-client-utils-module"></span><h2>federatedrc.client_utils module<a class="headerlink" href="#module-federatedrc.client_utils" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="federatedrc.client_utils.client_shell">
+<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">client_shell</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.client_shell" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.client_utils.client_train_local">
+<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">client_train_local</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em>, <em class="sig-param">episode</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.client_train_local" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.client_utils.convert_parameters">
+<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">convert_parameters</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">parameter_indices</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.convert_parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.client_utils.error_handle">
+<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">error_handle</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em>, <em class="sig-param">err</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.error_handle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.client_utils.gradient_norm">
+<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">gradient_norm</code><span class="sig-paren">(</span><em class="sig-param">trained_model</em>, <em class="sig-param">base_model</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.gradient_norm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.client_utils.parameter_threshold">
+<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">parameter_threshold</code><span class="sig-paren">(</span><em class="sig-param">parameter_list</em>, <em class="sig-param">threshold</em>, <em class="sig-param">value=0</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.parameter_threshold" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.client_utils.plot_results">
+<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">plot_results</code><span class="sig-paren">(</span><em class="sig-param">stats_dict</em>, <em class="sig-param">fname</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.plot_results" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.client_utils.plot_training_history">
+<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">plot_training_history</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.plot_training_history" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.client_utils.plot_tx">
+<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">plot_tx</code><span class="sig-paren">(</span><em class="sig-param">stats_dict</em>, <em class="sig-param">fname</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.plot_tx" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.client_utils.plot_tx_history">
+<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">plot_tx_history</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.plot_tx_history" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.client_utils.quit">
+<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">quit</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.quit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.client_utils.shell_help">
+<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">shell_help</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.shell_help" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.client_utils.show_connection">
+<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">show_connection</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.show_connection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.client_utils.show_model_accuracy">
+<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">show_model_accuracy</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.show_model_accuracy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.client_utils.show_model_loss">
+<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">show_model_loss</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.show_model_loss" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.client_utils.show_my_ip">
+<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">show_my_ip</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.show_my_ip" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-federatedrc.data_distribution">
+<span id="federatedrc-data-distribution-module"></span><h2>federatedrc.data_distribution module<a class="headerlink" href="#module-federatedrc.data_distribution" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="federatedrc.data_distribution.DataDistributor">
+<em class="property">class </em><code class="sig-prename descclassname">federatedrc.data_distribution.</code><code class="sig-name descname">DataDistributor</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">num_classes</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.data_distribution.DataDistributor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="federatedrc.data_distribution.DataDistributor.assign_data">
+<code class="sig-name descname">assign_data</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.data_distribution.DataDistributor.assign_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="federatedrc.data_distribution.DataDistributor.distribute_data">
+<code class="sig-name descname">distribute_data</code><span class="sig-paren">(</span><em class="sig-param">dist</em>, <em class="sig-param">num_elements</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.data_distribution.DataDistributor.distribute_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-federatedrc.network">
+<span id="federatedrc-network-module"></span><h2>federatedrc.network module<a class="headerlink" href="#module-federatedrc.network" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="federatedrc.network.InitialObject">
+<em class="property">class </em><code class="sig-prename descclassname">federatedrc.network.</code><code class="sig-name descname">InitialObject</code><span class="sig-paren">(</span><em class="sig-param">grad_threshold</em>, <em class="sig-param">model</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.network.InitialObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="method">
+<dt id="federatedrc.network.InitialObject.grad_threshold">
+<em class="property">property </em><code class="sig-name descname">grad_threshold</code><a class="headerlink" href="#federatedrc.network.InitialObject.grad_threshold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="federatedrc.network.InitialObject.model">
+<em class="property">property </em><code class="sig-name descname">model</code><a class="headerlink" href="#federatedrc.network.InitialObject.model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="federatedrc.network.UpdateObject">
+<em class="property">class </em><code class="sig-prename descclassname">federatedrc.network.</code><code class="sig-name descname">UpdateObject</code><span class="sig-paren">(</span><em class="sig-param">n_samples</em>, <em class="sig-param">model_parameters</em>, <em class="sig-param">client_sent</em>, <em class="sig-param">session_alive</em>, <em class="sig-param">parameter_indices</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.network.UpdateObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="method">
+<dt id="federatedrc.network.UpdateObject.client_sent">
+<em class="property">property </em><code class="sig-name descname">client_sent</code><a class="headerlink" href="#federatedrc.network.UpdateObject.client_sent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="federatedrc.network.UpdateObject.model_parameters">
+<em class="property">property </em><code class="sig-name descname">model_parameters</code><a class="headerlink" href="#federatedrc.network.UpdateObject.model_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="federatedrc.network.UpdateObject.n_samples">
+<em class="property">property </em><code class="sig-name descname">n_samples</code><a class="headerlink" href="#federatedrc.network.UpdateObject.n_samples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="federatedrc.network.UpdateObject.parameter_indices">
+<em class="property">property </em><code class="sig-name descname">parameter_indices</code><a class="headerlink" href="#federatedrc.network.UpdateObject.parameter_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="federatedrc.network.UpdateObject.session_alive">
+<em class="property">property </em><code class="sig-name descname">session_alive</code><a class="headerlink" href="#federatedrc.network.UpdateObject.session_alive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.network.receive_model_file">
+<code class="sig-prename descclassname">federatedrc.network.</code><code class="sig-name descname">receive_model_file</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">socket_conn</em>, <em class="sig-param">buffer_size=1024</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.network.receive_model_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.network.send_model_file">
+<code class="sig-prename descclassname">federatedrc.network.</code><code class="sig-name descname">send_model_file</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">socket_conn</em>, <em class="sig-param">buffer_size=1024</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.network.send_model_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-federatedrc.server">
+<span id="federatedrc-server-module"></span><h2>federatedrc.server module<a class="headerlink" href="#module-federatedrc.server" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="federatedrc.server.FederatedServer">
+<em class="property">class </em><code class="sig-prename descclassname">federatedrc.server.</code><code class="sig-name descname">FederatedServer</code><span class="sig-paren">(</span><em class="sig-param">model_class</em>, <em class="sig-param">configpath=''</em>, <em class="sig-param">interactive=False</em>, <em class="sig-param">verbose=False</em>, <em class="sig-param">listen_forever=True</em>, <em class="sig-param">n_clients=None</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server.FederatedServer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="federatedrc.server.FederatedServer.configure">
+<code class="sig-name descname">configure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server.FederatedServer.configure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="federatedrc.server.FederatedServer.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server.FederatedServer.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="federatedrc.server.FederatedServer.start_federated_averaging">
+<code class="sig-name descname">start_federated_averaging</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server.FederatedServer.start_federated_averaging" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="federatedrc.server.ServerConfig">
+<em class="property">class </em><code class="sig-prename descclassname">federatedrc.server.</code><code class="sig-name descname">ServerConfig</code><span class="sig-paren">(</span><em class="sig-param">wlan_ip</em>, <em class="sig-param">port</em>, <em class="sig-param">model_file_name</em>, <em class="sig-param">rx_history_file_name</em>, <em class="sig-param">grad_threshold</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server.ServerConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<dl class="method">
+<dt id="federatedrc.server.ServerConfig.grad_threshold">
+<em class="property">property </em><code class="sig-name descname">grad_threshold</code><a class="headerlink" href="#federatedrc.server.ServerConfig.grad_threshold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="federatedrc.server.ServerConfig.model_file_name">
+<em class="property">property </em><code class="sig-name descname">model_file_name</code><a class="headerlink" href="#federatedrc.server.ServerConfig.model_file_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="federatedrc.server.ServerConfig.port">
+<em class="property">property </em><code class="sig-name descname">port</code><a class="headerlink" href="#federatedrc.server.ServerConfig.port" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="federatedrc.server.ServerConfig.rx_history_file_name">
+<em class="property">property </em><code class="sig-name descname">rx_history_file_name</code><a class="headerlink" href="#federatedrc.server.ServerConfig.rx_history_file_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="federatedrc.server.ServerConfig.wlan_ip">
+<em class="property">property </em><code class="sig-name descname">wlan_ip</code><a class="headerlink" href="#federatedrc.server.ServerConfig.wlan_ip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-federatedrc.server_utils">
+<span id="federatedrc-server-utils-module"></span><h2>federatedrc.server_utils module<a class="headerlink" href="#module-federatedrc.server_utils" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="federatedrc.server_utils.aggregate_models">
+<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">aggregate_models</code><span class="sig-paren">(</span><em class="sig-param">update_objects</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.aggregate_models" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.server_utils.broadcast_initial_model">
+<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">broadcast_initial_model</code><span class="sig-paren">(</span><em class="sig-param">fserver_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.broadcast_initial_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.server_utils.broadcast_model">
+<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">broadcast_model</code><span class="sig-paren">(</span><em class="sig-param">fserver_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.broadcast_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.server_utils.build_params">
+<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">build_params</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">parameter_indices</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.build_params" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.server_utils.error_handle">
+<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">error_handle</code><span class="sig-paren">(</span><em class="sig-param">fserver_obj</em>, <em class="sig-param">err</em>, <em class="sig-param">conn_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.error_handle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.server_utils.plot_rx">
+<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">plot_rx</code><span class="sig-paren">(</span><em class="sig-param">rx_data</em>, <em class="sig-param">fname</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.plot_rx" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.server_utils.plot_rx_history">
+<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">plot_rx_history</code><span class="sig-paren">(</span><em class="sig-param">fserver_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.plot_rx_history" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.server_utils.quit">
+<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">quit</code><span class="sig-paren">(</span><em class="sig-param">fserver_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.quit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.server_utils.receive_update">
+<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">receive_update</code><span class="sig-paren">(</span><em class="sig-param">tmp_fname</em>, <em class="sig-param">conn_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.receive_update" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.server_utils.reset_model">
+<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">reset_model</code><span class="sig-paren">(</span><em class="sig-param">fserver_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.reset_model" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.server_utils.server_shell">
+<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">server_shell</code><span class="sig-paren">(</span><em class="sig-param">fserver_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.server_shell" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.server_utils.shell_help">
+<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">shell_help</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.shell_help" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.server_utils.show_connections">
+<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">show_connections</code><span class="sig-paren">(</span><em class="sig-param">fserver_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.show_connections" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.server_utils.show_next_port">
+<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">show_next_port</code><span class="sig-paren">(</span><em class="sig-param">fserver_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.show_next_port" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="federatedrc.server_utils.show_server_ip">
+<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">show_server_ip</code><span class="sig-paren">(</span><em class="sig-param">fserver_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.show_server_ip" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-federatedrc">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-federatedrc" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">federatedrc package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-federatedrc.client">federatedrc.client module</a></li>
+<li><a class="reference internal" href="#module-federatedrc.client_utils">federatedrc.client_utils module</a></li>
+<li><a class="reference internal" href="#module-federatedrc.data_distribution">federatedrc.data_distribution module</a></li>
+<li><a class="reference internal" href="#module-federatedrc.network">federatedrc.network module</a></li>
+<li><a class="reference internal" href="#module-federatedrc.server">federatedrc.server module</a></li>
+<li><a class="reference internal" href="#module-federatedrc.server_utils">federatedrc.server_utils module</a></li>
+<li><a class="reference internal" href="#module-federatedrc">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="modules.html"
+                        title="previous chapter">federatedrc</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/federatedrc.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="federatedrc"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Resource Constrained Federated Learning v1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >federatedrc</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Jason Zhang, Matthew Jones.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.0.
+    </div>
+  </body>
+</html>

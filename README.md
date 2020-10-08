@@ -95,3 +95,12 @@ python3 -m tests.test_mnist_fed_avg_client --configpath tests/config/mnist_clien
 ```
 
 Once all of the clients have been connected with the server, the server will automatically begin federating if ```n_clients``` is specified. If the server is in ```listen_forever``` mode, one can begin the process by entering ```start federated averaging``` in the server's interactive shell.
+
+### Updating Documentation 
+```shell
+Cd documentation
+sphinx-apidoc -fo . ../federatedrc
+Make html
+```
+
+Output will be in documentation/_build/html
