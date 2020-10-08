@@ -24,20 +24,54 @@ from federatedrc import network
 
 
 class ClientConfig(NamedTuple):
+    """Configuration template that is used to created a FederatedClient
+
+    Args:
+        NamedTuple mixed: A list containing each member variable
+
+    Parameters:
+    """
     server_ip: str
+    """ (str) The IP of the server the client will connect to.
+    """
     port: int
+    """ (int) The port of the server to connect to.
+    """
     model_file_name: str
+    """ (str) Filename that the model is saved in.
+    """
     training_history_file_name: str
+    """ (str) Name of png file with graph of model accuracy.
+    """
     tx_history_file_name: str
+    """ (str) Name of png file with graph of system bytes transferred.
+    """
     local_epochs: int
+    """ (int) Number of local epochs per spisode.
+    """
     episodes: int
+    """ (int) Number of episodes the client should run for. 
+    """
     batch_size: int
+    """ (int) The batch size for client training. 
+    """
     criterion: torch.nn.Module
+    """ (torch.nn.Module) The IP of the server the client will connect to.
+    """
     optimizer: torch.optim.Optimizer
+    """ (torch.optim.Optimizer) The IP of the server the client will connect to.
+    """
     optimizer_kwargs: dict
+    """ (dict) The IP of the server the client will connect to.
+    """
     parameter_threshold: float
+    """ (float) Value to threshold parameters on.
+    """
 
 class FederatedClient:
+    """
+    (list) The training data that will be used.
+    """
     def __init__(
         self,
         train,
