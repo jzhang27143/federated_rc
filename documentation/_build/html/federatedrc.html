@@ -169,12 +169,27 @@
 <dl class="function">
 <dt id="federatedrc.client_utils.client_shell">
 <code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">client_shell</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.client_shell" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Primary process for shell control, processes user input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fclient_obj</strong> (<em>Client Object</em>) – The client object with all related client information &amp; data.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="federatedrc.client_utils.client_train_local">
 <code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">client_train_local</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em>, <em class="sig-param">episode</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.client_train_local" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Train local model on inidividual client for specified number of episodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fclient_obj</strong> (<em>Client Object</em>) – The client object with all related client information &amp; data.</p></li>
+<li><p><strong>episode</strong> (<em>int</em>) – The current episode index.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="federatedrc.client_utils.convert_parameters">
@@ -194,57 +209,127 @@
 <dl class="function">
 <dt id="federatedrc.client_utils.parameter_threshold">
 <code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">parameter_threshold</code><span class="sig-paren">(</span><em class="sig-param">parameter_list</em>, <em class="sig-param">threshold</em>, <em class="sig-param">value=0</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.parameter_threshold" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Eliminates parameters that do not meet specified threshold, and returns remainder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parameter_list</strong> (<em>torch.NN</em>) – The network edge weights.</p></li>
+<li><p><strong>threshold</strong> (<em>float</em>) – The weight cutoff for thresholding.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="federatedrc.client_utils.plot_results">
 <code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">plot_results</code><span class="sig-paren">(</span><em class="sig-param">stats_dict</em>, <em class="sig-param">fname</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.plot_results" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Uses matplotlib to generate chart of accuracy and loss each epoch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fclient_obj</strong> (<em>Client Object</em>) – The client object with all related client information &amp; data.</p></li>
+<li><p><strong>fname</strong> (<em>str</em>) – Name of file to save chart as.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="federatedrc.client_utils.plot_training_history">
 <code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">plot_training_history</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.plot_training_history" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Initializes independent process to spawn analytics chart</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fclient_obj</strong> (<em>Client Object</em>) – The client object with all related client information &amp; data.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="federatedrc.client_utils.plot_tx">
 <code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">plot_tx</code><span class="sig-paren">(</span><em class="sig-param">stats_dict</em>, <em class="sig-param">fname</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.plot_tx" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Uses matplotlib to generate chart of bandwidth usage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fclient_obj</strong> (<em>Client Object</em>) – The client object with all related client information &amp; data.</p></li>
+<li><p><strong>fname</strong> (<em>str</em>) – Name of file to save chart as.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="federatedrc.client_utils.plot_tx_history">
 <code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">plot_tx_history</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.plot_tx_history" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Initializes independent process to spawn bandwidth usage chart.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fclient_obj</strong> (<em>Client Object</em>) – The client object with all related client information &amp; data.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="federatedrc.client_utils.quit">
 <code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">quit</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.quit" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Cancels local process</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fclient_obj</strong> (<em>Client Object</em>) – The client object with all related client information &amp; data.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="federatedrc.client_utils.shell_help">
 <code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">shell_help</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.shell_help" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Prints information for user on how to use shell.</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="federatedrc.client_utils.show_connection">
 <code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">show_connection</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.show_connection" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Logs server connection information</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fclient_obj</strong> (<em>Client Object</em>) – The client object with all related client information &amp; data.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="federatedrc.client_utils.show_model_accuracy">
 <code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">show_model_accuracy</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.show_model_accuracy" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Logs model accuracy</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fclient_obj</strong> (<em>Client Object</em>) – The client object with all related client information &amp; data.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="federatedrc.client_utils.show_model_loss">
 <code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">show_model_loss</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.show_model_loss" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Logs model loss</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fclient_obj</strong> (<em>Client Object</em>) – The client object with all related client information &amp; data.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="federatedrc.client_utils.show_my_ip">
 <code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">show_my_ip</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.show_my_ip" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Logs client IP</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fclient_obj</strong> (<em>Client Object</em>) – The client object with all related client information &amp; data.</p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 <div class="section" id="module-federatedrc.data_distribution">
