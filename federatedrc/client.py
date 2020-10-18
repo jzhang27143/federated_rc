@@ -24,53 +24,78 @@ from federatedrc import network
 
 
 class ClientConfig(NamedTuple):
-    """Configuration template that is used to created a FederatedClient
-
-    Args:
-        NamedTuple mixed: A list containing each member variable
-
-    Parameters:
+    """
+    Configuration template that is used to created a FederatedClient
     """
     server_ip: str
-    """ (str) The IP of the server the client will connect to.
+    """ 
+    (str) The IP of the server the client will connect to.
     """
     port: int
-    """ (int) The port of the server to connect to.
+    """ 
+    (int) The port of the server to connect to.
     """
     model_file_name: str
-    """ (str) Filename that the model is saved in.
+    """ 
+    (str) Filename that the model is saved in.
     """
     training_history_file_name: str
-    """ (str) Name of png file with graph of model accuracy.
+    """ 
+    (str) Name of png file with graph of model accuracy.
     """
     tx_history_file_name: str
-    """ (str) Name of png file with graph of system bytes transferred.
+    """ 
+    (str) Name of png file with graph of system bytes transferred.
     """
     local_epochs: int
-    """ (int) Number of local epochs per spisode.
+    """ 
+    (int) Number of local epochs per spisode.
     """
     episodes: int
-    """ (int) Number of episodes the client should run for. 
+    """ 
+    (int) Number of episodes the client should run for. 
     """
     batch_size: int
-    """ (int) The batch size for client training. 
+    """ 
+    (int) The batch size for client training. 
     """
     criterion: torch.nn.Module
-    """ (torch.nn.Module) The IP of the server the client will connect to.
+    """ 
+    (torch.nn.Module) Base model to train on.
     """
     optimizer: torch.optim.Optimizer
-    """ (torch.optim.Optimizer) The IP of the server the client will connect to.
+    """ 
+    (torch.optim.Optimizer) Torch optimizer to use for training. 
     """
     optimizer_kwargs: dict
-    """ (dict) The IP of the server the client will connect to.
+    """ 
+    (dict) Torch arguments for opimizer.
     """
     parameter_threshold: float
-    """ (float) Value to threshold parameters on.
+    """ 
+    (float) Value to threshold parameters on.
     """
 
 class FederatedClient:
     """
-    (list) The training data that will be used.
+    Client in Federated system. 
+
+    :param train: List of training data for FederatedClient to train on
+    :param test: List of test data for FederatedClient
+    :param configpath: File path to client config 
+    :param interactive: Determines whether command line interface is enabled
+    :param shared_test: Determines whether clients use the same test data
+    :param verbose: Determines whether system will print all debug comments
+    :param use_obs: Flag for using optimal brain surgeon
+
+    :type train: List 
+    :type test: List
+    :type configpath: String
+    :type interactive: Boolean
+    :type shared_test: Boolean
+    :type verbose: Boolean
+    :type use_obs: Boolean
+
     """
     def __init__(
         self,
@@ -111,6 +136,9 @@ class FederatedClient:
             print('Server Connection Established')
 
     def configure(self):
+        """
+        Fetches client config object and configures FederatedClient.
+        """
         # Fetch config object
         config_name = os.path.basename(self._configpath)
         loader = importlib.machinery.SourceFileLoader(
@@ -134,12 +162,19 @@ class FederatedClient:
         self._parameter_threshold = config.parameter_threshold
 
     def connect_to_server(self):
+        """
+        Connects FederatedClient object to FederatedServer
+        """
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((self._server_ip, self._port))
         s.setblocking(0)
         self._socket = s
 
     def train_fed_avg(self):
+        """
+        Runs the Federated Averaging training scheme on the client side. For each episode calls 
+        client_train_local from client_utils. 
+        """
         # Initial server model
         err, _ = network.receive_model_file(self._model_fname, self._socket)
         error_handle(self, err)
@@ -234,6 +269,13 @@ class FederatedClient:
         plot_tx_history(self)
 
     def calculate_accuracy(self, shared_test=False):
+        """
+        Calculates current test accuracy of FederatedClient. 
+
+        :param shared_test: Indicates whether the test accuracy will be calculated with the shared test data.
+
+        :type shared_test: Boolean
+        """
         test_set = self._test if not shared_test else self._shared_test
         assert test_set
         total = len(test_set)
@@ -253,6 +295,17 @@ class FederatedClient:
         return total_correct / total * 100
 
     def update_training_history(self, loss, test_acc, shared_test_acc=None):
+        """
+        Updates the test accuracy and loss after each training epoch.
+
+        :param loss: Loss for current epoch
+        :param test_acc: Test accuracy for current epoch
+        :param shared_test_acc: Indicates whether shared test accuracy data should be updated. 
+
+        :type loss: Float
+        :type test_acc: Float
+        :type shared_test_acc: Float
+        """
         self._stats_dict['loss'].append(loss)
         self._stats_dict['test_accuracy'].append(test_acc)
         if shared_test_acc:

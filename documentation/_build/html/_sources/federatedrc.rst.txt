@@ -28,14 +28,6 @@ federatedrc.data\_distribution module
    :undoc-members:
    :show-inheritance:
 
-federatedrc.network module
---------------------------
-
-.. automodule:: federatedrc.network
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 federatedrc.server module
 -------------------------
 

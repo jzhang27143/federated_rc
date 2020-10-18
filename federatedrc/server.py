@@ -24,14 +24,48 @@ from federatedrc.server_utils import (
 
 
 class ServerConfig(NamedTuple):
+    """
+    Configuration template that is used to create a FederatedServer.
+    """
     wlan_ip: str
+    """
+    (str) IP the server be hosted on. 
+    """
     port: int
+    """
+    (int) Port of the server. 
+    """
     model_file_name: str
+    """
+    (str) Name of file to load base model.
+    """
     rx_history_file_name: str
+    """
+    (str) Name of file that RX history will be saved as. 
+    """
     grad_threshold: float = 0.0
-
+    """
+    (float) Threshold FederatedClients must exceed to opt to send their models to the server.
+    """
 
 class FederatedServer:
+    """
+    Server in the Federated System. 
+
+    :param model_class: Pytorch model to run the Federated System on. 
+    :param configpath: File path to the server configuration. 
+    :param interactive: Indiciates whether the server will allow for command line interface. 
+    :param verbose: Inicates whether the server will print verbose comments. 
+    :param listen_forever: Indicates whether server waits for a specified number of clients. 
+    :param n_clients: The number of clients the server will wait to connect. Must be defined if listen_forever is false. 
+
+    :type model_class: nn.module
+    :type configpath: String
+    :type interactive: Boolean
+    :type verbose: Boolean
+    :type listen_forever: Boolean
+    :type n_clients: Int
+    """
     def __init__(
         self,
         model_class,
@@ -67,6 +101,9 @@ class FederatedServer:
         signal.signal(signal.SIGINT, keyboard_interrupt_handler)
 
     def configure(self):
+        """
+        Fetches server config file to setup the FederatedServer. 
+        """
         def select_interface(ipv4=True):
             ip_type = int(ipv4)
             adapters = list(ifaddr.get_adapters())
@@ -110,6 +147,10 @@ class FederatedServer:
         self._grad_threshold = config.grad_threshold
 
     def run(self):
+        """
+        Runs the Federated Server. Waits for the specified number of clients to cnnect, or wait forever if
+        listen_forever is true. 
+        """
         n_clients = 0
         while self._listen_forever or n_clients < self._n_clients:
             try:
@@ -140,6 +181,9 @@ class FederatedServer:
                 break
 
     def start_federated_averaging(self):
+        """
+        Begins the federated averaging process. 
+        """
         episode = 0
         tmp_fname = 'tmp_server{}.pt'
         broadcast_initial_model(self)   # Initialize client models

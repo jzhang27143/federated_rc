@@ -60,7 +60,7 @@ def client_train_local(fclient_obj, episode):
     
     :param fclient_obj: The client object with all related client information & data.
     :param episode: The current episode index.
-    :type fclient_obj: Client Object
+    :type fclient_obj: FederatedClient Object
     :type episode: int
     '''
     train_loader = torch.utils.data.DataLoader(

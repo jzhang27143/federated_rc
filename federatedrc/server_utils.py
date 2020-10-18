@@ -212,7 +212,7 @@ def show_server_ip(fserver_obj):
 def reset_model(fserver_obj):
     """Resets the model inside the server object.
 
-    ::param fserver_obj: The server object with all related server information & data
+    :param fserver_obj: The server object with all related server information & data
     :type fserver_obj: Server Object
     """
     fserver_obj._model = fserver_obj._model_class()
