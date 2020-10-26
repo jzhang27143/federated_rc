@@ -15,5 +15,5 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
     ],
     python_requires=">=3.6",
-    install_requires=["ifaddr", "torch", "torchvision"],
+    install_requires=["ifaddr", "torch", "torchvision", "tqdm"],
 )
