@@ -20,3 +20,17 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+Charts
+======
+
+.. image:: download.png
+   :scale: 50 %
+   :alt: alternate text
+   :align: center
+
+.. figure:: download.png
+   :scale: 50 %
+   :alt: map to buried treasure
+
+   This is the caption of the figure (a simple paragraph).
