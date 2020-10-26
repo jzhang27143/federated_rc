@@ -27,8 +27,7 @@ class DataDistributor:
         :type data: List
         """
         for elem in data:
-            self.buckets[elem[1]].append(elem)
-
+            self.buckets[elem[1].item()].append(elem)
     def distribute_data(self, dist, num_elements):
         """
         Leverages Pythons random library to split data into non-iid subsets.
