@@ -24,13 +24,8 @@ Indices and tables
 Charts
 ======
 
-.. image:: download.png
-   :scale: 50 %
-   :alt: alternate text
-   :align: center
-
 .. figure:: download.png
-   :scale: 50 %
-   :alt: map to buried treasure
+   :scale: 85 %
+   :alt: Loss and Accuracy during sample run. 
 
-   This is the caption of the figure (a simple paragraph).
+   Fig 1. Loss and Accuracy during sample run.
