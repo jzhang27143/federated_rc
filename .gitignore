@@ -3,6 +3,7 @@
 /**/*.swp
 /**/*.pyc
 /**/*.pt
+*.pt
 /data/*
 .DS_Store
 /build

@@ -212,6 +212,8 @@ class FederatedClient:
                     n_samples = update_obj.n_samples,
                     model_parameters = th_parameters
                 )
+
+                torch.save(update_obj, tmp_fname)
                 
                 # If advantageous, convert to COO-representation
                 coo_tmp_fname = 'tmp_coo_' + self._model_fname
