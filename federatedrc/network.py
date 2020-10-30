@@ -46,6 +46,7 @@ def send_model_file(filename, socket_conn, buffer_size=1024):
 
     # File size sent first to allow socket to persist
     fsize_msg = _pad_buffer(str(filesize).encode(), buffer_size)
+    print("LEN FILESIZEMSG == ===  =",len(fsize_msg))
     err = _send_buffer(socket_conn, fsize_msg, buffer_size)
 
     while not err and send_buffer:
