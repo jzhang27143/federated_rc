@@ -2,7 +2,7 @@ import argparse
 import torch
 
 from federatedrc.server import FederatedServer
-from models.linear import Net
+from models.sample_mnist_cnn import Net
 
 def launch_federated_server(args):
     fs = FederatedServer(
