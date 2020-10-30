@@ -55,8 +55,7 @@ def broadcast_model(fserver_obj):
         error_handle(fserver_obj, err, conn_obj)
 
 def build_params(model, parameter_indices):
-    blank_model = copy.deepcopy(model)
-    blank_params = list(blank_model.parameters())
+    blank_params = [torch.zeros_like(t) for t in model.parameters()]
     built_params = []
     for i in range(len(blank_params)):
         flat_blank_params = blank_params[i].reshape(-1).tolist()

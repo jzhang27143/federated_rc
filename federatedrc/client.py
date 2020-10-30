@@ -143,7 +143,8 @@ class FederatedClient:
                     n_samples = update_obj.n_samples,
                     model_parameters = th_parameters
                 )
-                
+                torch.save(update_obj, tmp_fname)
+
                 # If advantageous, convert to COO-representation
                 coo_tmp_fname = 'tmp_coo_' + self._model_fname
                 coo_format = convert_parameters(self._model, th_parameters)
@@ -153,8 +154,9 @@ class FederatedClient:
                     parameter_indices = True
                 )
                 torch.save(coo_update_obj, coo_tmp_fname)
-                tmp_fname = tmp_fname if os.path.getsize(tmp_fname) \
-                    <= os.path.getsize(coo_tmp_fname) else coo_tmp_fname
+                if os.path.getsize(tmp_fname) > os.path.getsize(coo_tmp_fname):
+                    tmp_fname = coo_tmp_fname
+                    update_obj = coo_update_obj
 
                 if self._verbose:
                     if tmp_fname == coo_tmp_fname:
