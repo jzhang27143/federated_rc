@@ -240,6 +240,7 @@ class FederatedClient:
                     print(f"Compression Factor: {100*n_pruned/n_total:.3f}%")
 
             torch.save(update_obj, tmp_fname)
+            print("CLient saved SIZE ===== ", os.path.getsize(tmp_fname))
             err, tx_bytes = network.send_model_file(tmp_fname, self._socket)
             error_handle(self, err)
             self._tx_bytes += tx_bytes
