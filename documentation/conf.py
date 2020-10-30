@@ -18,8 +18,8 @@ sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'Resource Constrained Federated Learning'
-copyright = '2020, Jason Zhang, Matthew Jones'
-author = 'Jason Zhang, Matthew Jones'
+copyright = '2020, Jason Zhang, Matthew Jones, Geoffrey Tian, Suhas Raja, Farrah Madkour, Simon Hoque'
+author = 'Jason Zhang, Matthew Jones, Geoffrey Tian, Suhas Raja, Farrah Madkour, Simon Hoque'
 
 # The full version, including alpha/beta/rc tags
 release = 'v1'
