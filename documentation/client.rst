@@ -1,6 +1,9 @@
 client
 ===================
 
+federatedrc.client module
+-------------------------
+
 .. automodule:: federatedrc.client
    :members:
    :undoc-members:

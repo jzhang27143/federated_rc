@@ -1,9 +1,8 @@
-federatedrc package
+modules
 ===================
 
 .. toctree::
    :maxdepth: 1
-   :caption: Submodules:
 
    server.rst
    client.rst
