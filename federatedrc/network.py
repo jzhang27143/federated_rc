@@ -40,13 +40,11 @@ def _pad_buffer(data_buffer, buffer_size):
 
 def send_model_file(filename, socket_conn, buffer_size=1024):
     filesize = os.path.getsize(filename)
-    print("FILESIZE =========", filesize)
     model_serial = open(filename, 'rb')
     send_buffer = model_serial.read(buffer_size)
 
     # File size sent first to allow socket to persist
     fsize_msg = _pad_buffer(str(filesize).encode(), buffer_size)
-    print("LEN FILESIZEMSG == ===  =",len(fsize_msg))
     err = _send_buffer(socket_conn, fsize_msg, buffer_size)
 
     while not err and send_buffer:
@@ -81,8 +79,6 @@ def receive_model_file(filename, socket_conn, buffer_size=1024):
         bytes_written = 0
     else:
         return err, 0
-
-    print("FILESIZE =========", filesize)
 
     with open(filename, 'wb') as model_serial:
         while not err and bytes_remaining > 0:

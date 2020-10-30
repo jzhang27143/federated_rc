@@ -198,14 +198,20 @@ class FederatedServer:
             end_session = False
             self.rx_data.append(self.rx_count)
 
-            pool = Pool(len(self._connections))
+            responses = []
+            for idx, conn_obj in enumerate(self._connections[:]):
+                responses.append(receive_update(tmp_fname.format(idx), conn_obj))
+
+            '''
+            pool = Pool(len(self._connections) + 1)
             responses = pool.starmap(
                 receive_update,
                 [(tmp_fname.format(idx), conn_obj)
                 for idx, conn_obj in enumerate(self._connections[:])]
             )
             pool.close()
-
+            '''
+            
             for idx, response in enumerate(responses):
                 err, bytes_received = response[0], response[1]
                 try:
