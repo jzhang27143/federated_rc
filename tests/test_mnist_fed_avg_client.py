@@ -36,6 +36,7 @@ def launch_federated_client(args):
     fc.train_fed_avg()
 
 if __name__ == '__main__':
+    torch.nn.Module.dump_patches = True
     parser = argparse.ArgumentParser(
         description='Federated Client Options'
     )
