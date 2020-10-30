@@ -7,7 +7,7 @@ Welcome to Resource Constrained Federated Learning's documentation!
 ===================================================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
    modules.rst
