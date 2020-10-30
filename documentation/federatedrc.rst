@@ -2,8 +2,8 @@ modules
 ===================
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
-   server.rst
-   client.rst
-   data_distribution.rst
+   server
+   client
+   data_distribution

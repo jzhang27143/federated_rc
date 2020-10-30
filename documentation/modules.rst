@@ -2,6 +2,6 @@ federatedrc
 ===========
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
-   federatedrc.rst
+   federatedrc
