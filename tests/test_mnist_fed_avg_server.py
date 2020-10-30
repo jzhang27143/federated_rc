@@ -1,7 +1,8 @@
 import argparse
+import torch
 
 from federatedrc.server import FederatedServer
-from models.sample_mnist_cnn import Net
+from models.linear import Net
 
 def launch_federated_server(args):
     fs = FederatedServer(
@@ -16,6 +17,7 @@ def launch_federated_server(args):
     fs.start_federated_averaging()
 
 if __name__ == '__main__':
+    torch.nn.Module.dump_patches = True
     parser = argparse.ArgumentParser(
         description='Federated Server Options'
     )
