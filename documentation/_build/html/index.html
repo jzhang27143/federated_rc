@@ -1,10 +1,11 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>Welcome to Resource Constrained Federated Learning’s documentation! &#8212; Resource Constrained Federated Learning v1 documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resource Constrained Federated Learning &#8212; Resource Constrained Federated Learning v1 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
@@ -30,7 +31,8 @@
         <li class="right" >
           <a href="modules.html" title="federatedrc"
              accesskey="N">next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">Resource Constrained Federated Learning v1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="#">Resource Constrained Federated Learning v1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Resource Constrained Federated Learning</a></li> 
       </ul>
     </div>  
 
@@ -39,13 +41,29 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="welcome-to-resource-constrained-federated-learning-s-documentation">
-<h1>Welcome to Resource Constrained Federated Learning’s documentation!<a class="headerlink" href="#welcome-to-resource-constrained-federated-learning-s-documentation" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="resource-constrained-federated-learning">
+<h1>Resource Constrained Federated Learning<a class="headerlink" href="#resource-constrained-federated-learning" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">federatedrc</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="federatedrc.html">federatedrc package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="federatedrc.html">modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="server.html">server</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="server.html#module-federatedrc.server">federatedrc.server module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="server.html#module-federatedrc.server_utils">federatedrc.server_utils module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="client.html">client</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="client.html#module-federatedrc.client">federatedrc.client module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="client.html#module-federatedrc.client_utils">federatedrc.client_utils module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="data_distribution.html">data_distribution</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="data_distribution.html#module-federatedrc.data_distribution">federatedrc.data_distribution module</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -59,8 +77,54 @@
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
 </div>
+<div class="section" id="charts">
+<h1>Charts<a class="headerlink" href="#charts" title="Permalink to this headline">¶</a></h1>
+<p>The following images show results of a federated simulation with four clients using aggressive parameter thresholding (with parameters thresholded at 1e-1) with i.i.d. data distribution. Parameter thresholding maintains an accuracy above 95% while reducing model size by over 80%.</p>
+<div class="figure align-default" id="id1">
+<a class="reference internal image-reference" href="_images/param_thresh_iid_1.jpg"><img alt="Server RX during sample run using parameter thresholding (i.i.d. distribution)." src="_images/param_thresh_iid_1.jpg" style="width: 458.15px; height: 317.05px;" /></a>
+<p class="caption"><span class="caption-text">Fig 1. Server RX during sample run using parameter thresholding (i.i.d. distribution).</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id2">
+<a class="reference internal image-reference" href="_images/param_thresh_iid_2.jpg"><img alt="Loss and accuracy during sample run using parameter thresholding (i.i.d. distribution)." src="_images/param_thresh_iid_2.jpg" style="width: 457.3px; height: 328.09999999999997px;" /></a>
+<p class="caption"><span class="caption-text">Fig 2. Loss and accuracy during sample run using parameter thresholding (i.i.d. distribution)</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id3">
+<a class="reference internal image-reference" href="_images/param_thresh_iid_3.jpg"><img alt="Loss and accuracy during sample run using parameter thresholding (i.i.d. distribution)" src="_images/param_thresh_iid_3.jpg" style="width: 435.2px; height: 329.8px;" /></a>
+<p class="caption"><span class="caption-text">Fig 3. Loss and accuracy during sample run using parameter thresholding (i.i.d. distribution)</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id4">
+<a class="reference internal image-reference" href="_images/param_thresh_iid_4.jpg"><img alt="Loss and accuracy during sample run using parameter thresholding (i.i.d. distribution)" src="_images/param_thresh_iid_4.jpg" style="width: 453.9px; height: 334.9px;" /></a>
+<p class="caption"><span class="caption-text">Fig 4. Loss and accuracy during sample run using parameter thresholding (i.i.d. distribution)</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id5">
+<a class="reference internal image-reference" href="_images/param_thresh_iid_5.jpg"><img alt="Loss and accuracy during sample run using parameter thresholding (i.i.d. distribution)" src="_images/param_thresh_iid_5.jpg" style="width: 445.4px; height: 329.8px;" /></a>
+<p class="caption"><span class="caption-text">Fig 5. Loss and accuracy during sample run using parameter thresholding (i.i.d. distribution)</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+<p>The following plots show the transmission and training histories of four clients (two trained with 4x more digits from 0-4 than 5-9 and two trained with 4x more digits from 5-9 than 0-4). The client models are all able to maintain at least 95% accuracy. This simulation shows that the system is robust enough to effectively aggregate parameter vectors learned from completely different data.</p>
+<div class="figure align-default" id="id6">
+<a class="reference internal image-reference" href="_images/param_thresh_non_iid_1.jpg"><img alt="Server RX during sample run using parameter thresholding (non i.i.d. distribution)." src="_images/param_thresh_non_iid_1.jpg" style="width: 435.2px; height: 304.3px;" /></a>
+<p class="caption"><span class="caption-text">Fig 6. Server RX during sample run using parameter thresholding (non i.i.d. distribution).</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id7">
+<a class="reference internal image-reference" href="_images/param_thresh_non_iid_2.jpg"><img alt="Loss and accuracy during sample run using parameter thresholding (non i.i.d. distribution)." src="_images/param_thresh_non_iid_2.jpg" style="width: 413.09999999999997px; height: 300.9px;" /></a>
+<p class="caption"><span class="caption-text">Fig 7. Loss and accuracy during sample run using parameter thresholding (non i.i.d. distribution)</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id8">
+<a class="reference internal image-reference" href="_images/param_thresh_non_iid_3.jpg"><img alt="Loss and accuracy during sample run using parameter thresholding (non i.i.d. distribution)" src="_images/param_thresh_non_iid_3.jpg" style="width: 428.4px; height: 319.59999999999997px;" /></a>
+<p class="caption"><span class="caption-text">Fig 8. Loss and accuracy during sample run using parameter thresholding (non i.i.d. distribution)</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id9">
+<a class="reference internal image-reference" href="_images/param_thresh_non_iid_4.jpg"><img alt="Loss and accuracy during sample run using parameter thresholding (non i.i.d. distribution)" src="_images/param_thresh_non_iid_4.jpg" style="width: 435.2px; height: 321.3px;" /></a>
+<p class="caption"><span class="caption-text">Fig 9. Loss and accuracy during sample run using parameter thresholding (non i.i.d. distribution)</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</div>
+<div class="figure align-default" id="id10">
+<a class="reference internal image-reference" href="_images/param_thresh_non_iid_5.jpg"><img alt="Loss and accuracy during sample run using parameter thresholding (non i.i.d. distribution)" src="_images/param_thresh_non_iid_5.jpg" style="width: 438.59999999999997px; height: 317.9px;" /></a>
+<p class="caption"><span class="caption-text">Fig 10. Loss and accuracy during sample run using parameter thresholding (non i.i.d. distribution)</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</div>
+</div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -68,8 +132,9 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Welcome to Resource Constrained Federated Learning’s documentation!</a></li>
+<li><a class="reference internal" href="#">Resource Constrained Federated Learning</a></li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+<li><a class="reference internal" href="#charts">Charts</a></li>
 </ul>
 
   <h4>Next topic</h4>
@@ -108,12 +173,13 @@
         <li class="right" >
           <a href="modules.html" title="federatedrc"
              >next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">Resource Constrained Federated Learning v1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="#">Resource Constrained Federated Learning v1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Resource Constrained Federated Learning</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2020, Jason Zhang, Matthew Jones.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.0.
+        &#169; Copyright 2020, Jason Zhang, Matthew Jones, Geoffrey Tian, Suhas Raja, Farrah Madkour, Simon Hoque.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>
