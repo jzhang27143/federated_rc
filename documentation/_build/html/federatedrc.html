@@ -1,10 +1,11 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>federatedrc package &#8212; Resource Constrained Federated Learning v1 documentation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>modules &#8212; Resource Constrained Federated Learning v1 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
@@ -16,6 +17,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="server" href="server.html" />
     <link rel="prev" title="federatedrc" href="modules.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -28,10 +30,14 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
+          <a href="server.html" title="server"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
           <a href="modules.html" title="federatedrc"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Resource Constrained Federated Learning v1 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">federatedrc</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">federatedrc</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">modules</a></li> 
       </ul>
     </div>  
 
@@ -40,689 +46,41 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="federatedrc-package">
-<h1>federatedrc package<a class="headerlink" href="#federatedrc-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-federatedrc.client">
-<span id="federatedrc-client-module"></span><h2>federatedrc.client module<a class="headerlink" href="#module-federatedrc.client" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="federatedrc.client.ClientConfig">
-<em class="property">class </em><code class="sig-prename descclassname">federatedrc.client.</code><code class="sig-name descname">ClientConfig</code><a class="headerlink" href="#federatedrc.client.ClientConfig" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
-<p>Configuration template that is used to created a FederatedClient</p>
-<dl class="method">
-<dt id="federatedrc.client.ClientConfig.batch_size">
-<em class="property">property </em><code class="sig-name descname">batch_size</code><a class="headerlink" href="#federatedrc.client.ClientConfig.batch_size" title="Permalink to this definition">¶</a></dt>
-<dd><p>(int) The batch size for client training.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="federatedrc.client.ClientConfig.criterion">
-<em class="property">property </em><code class="sig-name descname">criterion</code><a class="headerlink" href="#federatedrc.client.ClientConfig.criterion" title="Permalink to this definition">¶</a></dt>
-<dd><p>(torch.nn.Module) Base model to train on.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="federatedrc.client.ClientConfig.episodes">
-<em class="property">property </em><code class="sig-name descname">episodes</code><a class="headerlink" href="#federatedrc.client.ClientConfig.episodes" title="Permalink to this definition">¶</a></dt>
-<dd><p>(int) Number of episodes the client should run for.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="federatedrc.client.ClientConfig.local_epochs">
-<em class="property">property </em><code class="sig-name descname">local_epochs</code><a class="headerlink" href="#federatedrc.client.ClientConfig.local_epochs" title="Permalink to this definition">¶</a></dt>
-<dd><p>(int) Number of local epochs per spisode.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="federatedrc.client.ClientConfig.model_file_name">
-<em class="property">property </em><code class="sig-name descname">model_file_name</code><a class="headerlink" href="#federatedrc.client.ClientConfig.model_file_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>(str) Filename that the model is saved in.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="federatedrc.client.ClientConfig.optimizer">
-<em class="property">property </em><code class="sig-name descname">optimizer</code><a class="headerlink" href="#federatedrc.client.ClientConfig.optimizer" title="Permalink to this definition">¶</a></dt>
-<dd><p>(torch.optim.Optimizer) Torch optimizer to use for training.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="federatedrc.client.ClientConfig.optimizer_kwargs">
-<em class="property">property </em><code class="sig-name descname">optimizer_kwargs</code><a class="headerlink" href="#federatedrc.client.ClientConfig.optimizer_kwargs" title="Permalink to this definition">¶</a></dt>
-<dd><p>(dict) Torch arguments for opimizer.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="federatedrc.client.ClientConfig.parameter_threshold">
-<em class="property">property </em><code class="sig-name descname">parameter_threshold</code><a class="headerlink" href="#federatedrc.client.ClientConfig.parameter_threshold" title="Permalink to this definition">¶</a></dt>
-<dd><p>(float) Value to threshold parameters on.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="federatedrc.client.ClientConfig.port">
-<em class="property">property </em><code class="sig-name descname">port</code><a class="headerlink" href="#federatedrc.client.ClientConfig.port" title="Permalink to this definition">¶</a></dt>
-<dd><p>(int) The port of the server to connect to.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="federatedrc.client.ClientConfig.server_ip">
-<em class="property">property </em><code class="sig-name descname">server_ip</code><a class="headerlink" href="#federatedrc.client.ClientConfig.server_ip" title="Permalink to this definition">¶</a></dt>
-<dd><p>(str) The IP of the server the client will connect to.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="federatedrc.client.ClientConfig.training_history_file_name">
-<em class="property">property </em><code class="sig-name descname">training_history_file_name</code><a class="headerlink" href="#federatedrc.client.ClientConfig.training_history_file_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>(str) Name of png file with graph of model accuracy.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="federatedrc.client.ClientConfig.tx_history_file_name">
-<em class="property">property </em><code class="sig-name descname">tx_history_file_name</code><a class="headerlink" href="#federatedrc.client.ClientConfig.tx_history_file_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>(str) Name of png file with graph of system bytes transferred.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="federatedrc.client.FederatedClient">
-<em class="property">class </em><code class="sig-prename descclassname">federatedrc.client.</code><code class="sig-name descname">FederatedClient</code><span class="sig-paren">(</span><em class="sig-param">train</em>, <em class="sig-param">test</em>, <em class="sig-param">configpath=''</em>, <em class="sig-param">interactive=False</em>, <em class="sig-param">shared_test=None</em>, <em class="sig-param">verbose=False</em>, <em class="sig-param">use_obs=False</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client.FederatedClient" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Client in Federated system.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>train</strong> (<em>List</em>) – List of training data for FederatedClient to train on</p></li>
-<li><p><strong>test</strong> (<em>List</em>) – List of test data for FederatedClient</p></li>
-<li><p><strong>configpath</strong> (<em>String</em>) – File path to client config</p></li>
-<li><p><strong>interactive</strong> (<em>Boolean</em>) – Determines whether command line interface is enabled</p></li>
-<li><p><strong>shared_test</strong> (<em>Boolean</em>) – Determines whether clients use the same test data</p></li>
-<li><p><strong>verbose</strong> (<em>Boolean</em>) – Determines whether system will print all debug comments</p></li>
-<li><p><strong>use_obs</strong> (<em>Boolean</em>) – Flag for using optimal brain surgeon</p></li>
+  <div class="section" id="modules">
+<h1>modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="server.html">server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="server.html#module-federatedrc.server">federatedrc.server module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.html#module-federatedrc.server_utils">federatedrc.server_utils module</a></li>
 </ul>
-</dd>
-</dl>
-<dl class="method">
-<dt id="federatedrc.client.FederatedClient.calculate_accuracy">
-<code class="sig-name descname">calculate_accuracy</code><span class="sig-paren">(</span><em class="sig-param">shared_test=False</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client.FederatedClient.calculate_accuracy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates current test accuracy of FederatedClient.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>shared_test</strong> (<em>Boolean</em>) – Indicates whether the test accuracy will be calculated with the shared test data.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="federatedrc.client.FederatedClient.configure">
-<code class="sig-name descname">configure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client.FederatedClient.configure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Fetches client config object and configures FederatedClient.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="federatedrc.client.FederatedClient.connect_to_server">
-<code class="sig-name descname">connect_to_server</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client.FederatedClient.connect_to_server" title="Permalink to this definition">¶</a></dt>
-<dd><p>Connects FederatedClient object to FederatedServer</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="federatedrc.client.FederatedClient.train_fed_avg">
-<code class="sig-name descname">train_fed_avg</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client.FederatedClient.train_fed_avg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Runs the Federated Averaging training scheme on the client side. For each episode calls 
-client_train_local from client_utils.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="federatedrc.client.FederatedClient.update_training_history">
-<code class="sig-name descname">update_training_history</code><span class="sig-paren">(</span><em class="sig-param">loss</em>, <em class="sig-param">test_acc</em>, <em class="sig-param">shared_test_acc=None</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client.FederatedClient.update_training_history" title="Permalink to this definition">¶</a></dt>
-<dd><p>Updates the test accuracy and loss after each training epoch.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>loss</strong> (<em>Float</em>) – Loss for current epoch</p></li>
-<li><p><strong>test_acc</strong> (<em>Float</em>) – Test accuracy for current epoch</p></li>
-<li><p><strong>shared_test_acc</strong> (<em>Float</em>) – Indicates whether shared test accuracy data should be updated.</p></li>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="client.html">client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="client.html#module-federatedrc.client">federatedrc.client module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client.html#module-federatedrc.client_utils">federatedrc.client_utils module</a></li>
 </ul>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-federatedrc.client_utils">
-<span id="federatedrc-client-utils-module"></span><h2>federatedrc.client_utils module<a class="headerlink" href="#module-federatedrc.client_utils" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="federatedrc.client_utils.client_shell">
-<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">client_shell</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.client_shell" title="Permalink to this definition">¶</a></dt>
-<dd><p>Primary process for shell control, processes user input.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fclient_obj</strong> (<em>Client Object</em>) – The client object with all related client information &amp; data.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.client_utils.client_train_local">
-<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">client_train_local</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em>, <em class="sig-param">episode</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.client_train_local" title="Permalink to this definition">¶</a></dt>
-<dd><p>Train local model on inidividual client for specified number of episodes.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>fclient_obj</strong> (<em>FederatedClient Object</em>) – The client object with all related client information &amp; data.</p></li>
-<li><p><strong>episode</strong> (<em>int</em>) – The current episode index.</p></li>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="data_distribution.html">data_distribution</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="data_distribution.html#module-federatedrc.data_distribution">federatedrc.data_distribution module</a></li>
 </ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.client_utils.convert_parameters">
-<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">convert_parameters</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">parameter_indices</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.convert_parameters" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.client_utils.error_handle">
-<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">error_handle</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em>, <em class="sig-param">err</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.error_handle" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.client_utils.gradient_norm">
-<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">gradient_norm</code><span class="sig-paren">(</span><em class="sig-param">trained_model</em>, <em class="sig-param">base_model</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.gradient_norm" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.client_utils.parameter_threshold">
-<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">parameter_threshold</code><span class="sig-paren">(</span><em class="sig-param">parameter_list</em>, <em class="sig-param">threshold</em>, <em class="sig-param">value=0</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.parameter_threshold" title="Permalink to this definition">¶</a></dt>
-<dd><p>Eliminates parameters that do not meet specified threshold, and returns remainder.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>parameter_list</strong> (<em>torch.NN</em>) – The network edge weights.</p></li>
-<li><p><strong>threshold</strong> (<em>float</em>) – The weight cutoff for thresholding.</p></li>
+</li>
 </ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.client_utils.plot_results">
-<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">plot_results</code><span class="sig-paren">(</span><em class="sig-param">stats_dict</em>, <em class="sig-param">fname</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.plot_results" title="Permalink to this definition">¶</a></dt>
-<dd><p>Uses matplotlib to generate chart of accuracy and loss each epoch.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>fclient_obj</strong> (<em>Client Object</em>) – The client object with all related client information &amp; data.</p></li>
-<li><p><strong>fname</strong> (<em>str</em>) – Name of file to save chart as.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.client_utils.plot_training_history">
-<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">plot_training_history</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.plot_training_history" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initializes independent process to spawn analytics chart</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fclient_obj</strong> (<em>Client Object</em>) – The client object with all related client information &amp; data.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.client_utils.plot_tx">
-<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">plot_tx</code><span class="sig-paren">(</span><em class="sig-param">stats_dict</em>, <em class="sig-param">fname</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.plot_tx" title="Permalink to this definition">¶</a></dt>
-<dd><p>Uses matplotlib to generate chart of bandwidth usage.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>fclient_obj</strong> (<em>Client Object</em>) – The client object with all related client information &amp; data.</p></li>
-<li><p><strong>fname</strong> (<em>str</em>) – Name of file to save chart as.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.client_utils.plot_tx_history">
-<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">plot_tx_history</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.plot_tx_history" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initializes independent process to spawn bandwidth usage chart.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fclient_obj</strong> (<em>Client Object</em>) – The client object with all related client information &amp; data.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.client_utils.quit">
-<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">quit</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.quit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Cancels local process</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fclient_obj</strong> (<em>Client Object</em>) – The client object with all related client information &amp; data.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.client_utils.shell_help">
-<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">shell_help</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.shell_help" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints information for user on how to use shell.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.client_utils.show_connection">
-<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">show_connection</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.show_connection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Logs server connection information</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fclient_obj</strong> (<em>Client Object</em>) – The client object with all related client information &amp; data.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.client_utils.show_model_accuracy">
-<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">show_model_accuracy</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.show_model_accuracy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Logs model accuracy</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fclient_obj</strong> (<em>Client Object</em>) – The client object with all related client information &amp; data.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.client_utils.show_model_loss">
-<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">show_model_loss</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.show_model_loss" title="Permalink to this definition">¶</a></dt>
-<dd><p>Logs model loss</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fclient_obj</strong> (<em>Client Object</em>) – The client object with all related client information &amp; data.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.client_utils.show_my_ip">
-<code class="sig-prename descclassname">federatedrc.client_utils.</code><code class="sig-name descname">show_my_ip</code><span class="sig-paren">(</span><em class="sig-param">fclient_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.client_utils.show_my_ip" title="Permalink to this definition">¶</a></dt>
-<dd><p>Logs client IP</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fclient_obj</strong> (<em>Client Object</em>) – The client object with all related client information &amp; data.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
-<div class="section" id="module-federatedrc.data_distribution">
-<span id="federatedrc-data-distribution-module"></span><h2>federatedrc.data_distribution module<a class="headerlink" href="#module-federatedrc.data_distribution" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="federatedrc.data_distribution.DataDistributor">
-<em class="property">class </em><code class="sig-prename descclassname">federatedrc.data_distribution.</code><code class="sig-name descname">DataDistributor</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">num_classes</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.data_distribution.DataDistributor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Distributes data according to a predefined distribution.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<em>List</em>) – List of data that should be redistributed</p></li>
-<li><p><strong>num_classes</strong> (<em>int</em>) – Number of possible classes</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="method">
-<dt id="federatedrc.data_distribution.DataDistributor.assign_data">
-<code class="sig-name descname">assign_data</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.data_distribution.DataDistributor.assign_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Places data into according buckets based on precomputed bucket assignment.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> (<em>List</em>) – List of data</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="federatedrc.data_distribution.DataDistributor.distribute_data">
-<code class="sig-name descname">distribute_data</code><span class="sig-paren">(</span><em class="sig-param">dist</em>, <em class="sig-param">num_elements</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.data_distribution.DataDistributor.distribute_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Leverages Pythons random library to split data into non-iid subsets.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dist</strong> (<em>List of ints</em><em> or </em><em>List of floats</em>) – Desired distribution of data. List of values used to determine relative size of each class of data.</p></li>
-<li><p><strong>num_elements</strong> (<em>int</em>) – The size of the returned distributed data</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-federatedrc.server">
-<span id="federatedrc-server-module"></span><h2>federatedrc.server module<a class="headerlink" href="#module-federatedrc.server" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="federatedrc.server.FederatedServer">
-<em class="property">class </em><code class="sig-prename descclassname">federatedrc.server.</code><code class="sig-name descname">FederatedServer</code><span class="sig-paren">(</span><em class="sig-param">model_class</em>, <em class="sig-param">configpath=''</em>, <em class="sig-param">interactive=False</em>, <em class="sig-param">verbose=False</em>, <em class="sig-param">listen_forever=True</em>, <em class="sig-param">n_clients=None</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server.FederatedServer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Server in the Federated System.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>model_class</strong> (<em>nn.module</em>) – Pytorch model to run the Federated System on.</p></li>
-<li><p><strong>configpath</strong> (<em>String</em>) – File path to the server configuration.</p></li>
-<li><p><strong>interactive</strong> (<em>Boolean</em>) – Indiciates whether the server will allow for command line interface.</p></li>
-<li><p><strong>verbose</strong> (<em>Boolean</em>) – Inicates whether the server will print verbose comments.</p></li>
-<li><p><strong>listen_forever</strong> (<em>Boolean</em>) – Indicates whether server waits for a specified number of clients.</p></li>
-<li><p><strong>n_clients</strong> (<em>Int</em>) – The number of clients the server will wait to connect. Must be defined if listen_forever is false.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="method">
-<dt id="federatedrc.server.FederatedServer.configure">
-<code class="sig-name descname">configure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server.FederatedServer.configure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Fetches server config file to setup the FederatedServer.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="federatedrc.server.FederatedServer.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server.FederatedServer.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Runs the Federated Server. Waits for the specified number of clients to cnnect, or wait forever if
-listen_forever is true.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="federatedrc.server.FederatedServer.start_federated_averaging">
-<code class="sig-name descname">start_federated_averaging</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server.FederatedServer.start_federated_averaging" title="Permalink to this definition">¶</a></dt>
-<dd><p>Begins the federated averaging process.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="federatedrc.server.ServerConfig">
-<em class="property">class </em><code class="sig-prename descclassname">federatedrc.server.</code><code class="sig-name descname">ServerConfig</code><a class="headerlink" href="#federatedrc.server.ServerConfig" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
-<p>Configuration template that is used to create a FederatedServer.</p>
-<dl class="method">
-<dt id="federatedrc.server.ServerConfig.grad_threshold">
-<em class="property">property </em><code class="sig-name descname">grad_threshold</code><a class="headerlink" href="#federatedrc.server.ServerConfig.grad_threshold" title="Permalink to this definition">¶</a></dt>
-<dd><p>(float) Threshold FederatedClients must exceed to opt to send their models to the server.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="federatedrc.server.ServerConfig.model_file_name">
-<em class="property">property </em><code class="sig-name descname">model_file_name</code><a class="headerlink" href="#federatedrc.server.ServerConfig.model_file_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>(str) Name of file to load base model.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="federatedrc.server.ServerConfig.port">
-<em class="property">property </em><code class="sig-name descname">port</code><a class="headerlink" href="#federatedrc.server.ServerConfig.port" title="Permalink to this definition">¶</a></dt>
-<dd><p>(int) Port of the server.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="federatedrc.server.ServerConfig.rx_history_file_name">
-<em class="property">property </em><code class="sig-name descname">rx_history_file_name</code><a class="headerlink" href="#federatedrc.server.ServerConfig.rx_history_file_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>(str) Name of file that RX history will be saved as.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="federatedrc.server.ServerConfig.wlan_ip">
-<em class="property">property </em><code class="sig-name descname">wlan_ip</code><a class="headerlink" href="#federatedrc.server.ServerConfig.wlan_ip" title="Permalink to this definition">¶</a></dt>
-<dd><p>(str) IP the server be hosted on.</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-federatedrc.server_utils">
-<span id="federatedrc-server-utils-module"></span><h2>federatedrc.server_utils module<a class="headerlink" href="#module-federatedrc.server_utils" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="federatedrc.server_utils.aggregate_models">
-<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">aggregate_models</code><span class="sig-paren">(</span><em class="sig-param">update_objects</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.aggregate_models" title="Permalink to this definition">¶</a></dt>
-<dd><p>Aggregates client models using the federated averaging algorithm.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>update_objects</strong> (<em>Update Object</em>) – Objects containing parameters from trained client models</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p>aggregate_params - Parameters obtained from aggregating the clients as a list of Tensors.</p></li>
-</ul>
-</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><ul class="simple">
-<li><p>aggregate_params - list</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.server_utils.broadcast_initial_model">
-<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">broadcast_initial_model</code><span class="sig-paren">(</span><em class="sig-param">fserver_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.broadcast_initial_model" title="Permalink to this definition">¶</a></dt>
-<dd><p>Broadcasts the initial model from a server to all the clients.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fserver_obj</strong> (<em>Server Object</em>) – The server object with all related server information &amp; data</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.server_utils.broadcast_model">
-<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">broadcast_model</code><span class="sig-paren">(</span><em class="sig-param">fserver_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.broadcast_model" title="Permalink to this definition">¶</a></dt>
-<dd><p>Broadcasts the latest model from a server to all the clients.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fserver_obj</strong> (<em>Server Object</em>) – The server object with all related server information &amp; data</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.server_utils.build_params">
-<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">build_params</code><span class="sig-paren">(</span><em class="sig-param">model</em>, <em class="sig-param">parameter_indices</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.build_params" title="Permalink to this definition">¶</a></dt>
-<dd><p>Builds parameters from model that is used to create an update object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>model</strong> (<em>torch.nn.Module</em>) – The model for which parameters are collected.</p></li>
-<li><p><strong>parameter_indices</strong> (<em>list</em>) – Module parameters from the model</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p>built_params - Built parameters</p></li>
-</ul>
-</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><ul class="simple">
-<li><p>built_params - list</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.server_utils.error_handle">
-<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">error_handle</code><span class="sig-paren">(</span><em class="sig-param">fserver_obj</em>, <em class="sig-param">err</em>, <em class="sig-param">conn_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.error_handle" title="Permalink to this definition">¶</a></dt>
-<dd><p>Handles an error with a given error code, server object and connection</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>fserver_obj</strong> (<em>Server Object</em>) – The server object with all related server information &amp; data</p></li>
-<li><p><strong>err</strong> (<em>int</em>) – Error code</p></li>
-<li><p><strong>conn_obj</strong> (<em>tuple</em>) – Tuple containing the socket object, address and port of a connection</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.server_utils.plot_rx">
-<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">plot_rx</code><span class="sig-paren">(</span><em class="sig-param">rx_data</em>, <em class="sig-param">fname</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.plot_rx" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plots the number of bytes received by the server.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>rx_data</strong> (<em>list</em>) – Data to plot</p></li>
-<li><p><strong>fname</strong> (<em>str</em>) – Name of the output file</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.server_utils.plot_rx_history">
-<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">plot_rx_history</code><span class="sig-paren">(</span><em class="sig-param">fserver_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.plot_rx_history" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plots the history of the number of bytes received by the server.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fserver_obj</strong> (<em>Server Object</em>) – The server object with all related server information &amp; data</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.server_utils.quit">
-<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">quit</code><span class="sig-paren">(</span><em class="sig-param">fserver_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.quit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Quits the server shell.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fserver_obj</strong> (<em>Server Object</em>) – The server object with all related server information &amp; data</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.server_utils.receive_update">
-<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">receive_update</code><span class="sig-paren">(</span><em class="sig-param">tmp_fname</em>, <em class="sig-param">conn_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.receive_update" title="Permalink to this definition">¶</a></dt>
-<dd><p>Receives updates through a socket from a serialized model file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>tmp_fname</strong> (<em>str</em>) – Name of the file containing model.</p></li>
-<li><p><strong>conn_obj</strong> (<em>tuple</em>) – Tuple containing the socket object, address and port of a connection</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p>err - Error code when receiving a model update</p></li>
-<li><p>bytes_received - Number of bytes received</p></li>
-</ul>
-</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><ul class="simple">
-<li><p>err - int</p></li>
-<li><p>bytes_received - int</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.server_utils.reset_model">
-<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">reset_model</code><span class="sig-paren">(</span><em class="sig-param">fserver_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.reset_model" title="Permalink to this definition">¶</a></dt>
-<dd><p>Resets the model inside the server object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fserver_obj</strong> (<em>Server Object</em>) – The server object with all related server information &amp; data</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.server_utils.server_shell">
-<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">server_shell</code><span class="sig-paren">(</span><em class="sig-param">fserver_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.server_shell" title="Permalink to this definition">¶</a></dt>
-<dd><p>Primary process for shell control, processes user input</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fserver_obj</strong> (<em>Server Object</em>) – The server object with all related server information &amp; data</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.server_utils.shell_help">
-<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">shell_help</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.shell_help" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints commands for user to use on the server shell.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.server_utils.show_connections">
-<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">show_connections</code><span class="sig-paren">(</span><em class="sig-param">fserver_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.show_connections" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints details of all the connections within the server object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fserver_obj</strong> (<em>Server Object</em>) – The server object with all related server information &amp; data</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.server_utils.show_next_port">
-<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">show_next_port</code><span class="sig-paren">(</span><em class="sig-param">fserver_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.show_next_port" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints the next available port within the server object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fserver_obj</strong> (<em>Server Object</em>) – The server object with all related server information &amp; data</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="federatedrc.server_utils.show_server_ip">
-<code class="sig-prename descclassname">federatedrc.server_utils.</code><code class="sig-name descname">show_server_ip</code><span class="sig-paren">(</span><em class="sig-param">fserver_obj</em><span class="sig-paren">)</span><a class="headerlink" href="#federatedrc.server_utils.show_server_ip" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints the IP Address of the server object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>fserver_obj</strong> (<em>Server Object</em>) – The server object with all related server information &amp; data</p>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
-<div class="section" id="module-federatedrc">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-federatedrc" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">federatedrc package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-federatedrc.client">federatedrc.client module</a></li>
-<li><a class="reference internal" href="#module-federatedrc.client_utils">federatedrc.client_utils module</a></li>
-<li><a class="reference internal" href="#module-federatedrc.data_distribution">federatedrc.data_distribution module</a></li>
-<li><a class="reference internal" href="#module-federatedrc.server">federatedrc.server module</a></li>
-<li><a class="reference internal" href="#module-federatedrc.server_utils">federatedrc.server_utils module</a></li>
-<li><a class="reference internal" href="#module-federatedrc">Module contents</a></li>
-</ul>
-</li>
-</ul>
-
   <h4>Previous topic</h4>
   <p class="topless"><a href="modules.html"
                         title="previous chapter">federatedrc</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="server.html"
+                        title="next chapter">server</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -754,15 +112,19 @@ listen_forever is true.</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
+          <a href="server.html" title="server"
+             >next</a> |</li>
+        <li class="right" >
           <a href="modules.html" title="federatedrc"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Resource Constrained Federated Learning v1 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" >federatedrc</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="modules.html" >federatedrc</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">modules</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2020, Jason Zhang, Matthew Jones.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.0.
+        &#169; Copyright 2020, Jason Zhang, Matthew Jones, Geoffrey Tian, Suhas Raja, Farrah Madkour, Simon Hoque.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
     </div>
   </body>
 </html>
