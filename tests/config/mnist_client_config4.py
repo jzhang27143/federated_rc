@@ -17,5 +17,5 @@ client_config = ClientConfig(
         'lr': 0.001,
         'momentum': 0.9
     },
-    parameter_threshold = 1e-4
+    parameter_threshold = 1e-1
 )

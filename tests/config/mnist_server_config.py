@@ -5,5 +5,5 @@ server_config = ServerConfig(
     port = '8880',
     model_file_name = 'mnist_sample_cnn_server.pt',
     rx_history_file_name = 'rx_history.png',
-    grad_threshold = 1.5
+    grad_threshold = 3.5
 )
